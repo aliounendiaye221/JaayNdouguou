@@ -1,0 +1,11 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.jaayndougou.sn/sitemap.xml
+
+# Disallow admin pages
+User-agent: *
+Disallow: /admin/
+Disallow: /api/
