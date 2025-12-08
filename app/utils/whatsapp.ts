@@ -2,7 +2,7 @@
 export const WHATSAPP_BUSINESS_NUMBER = "+221786037913";
 
 export interface CartItem {
-    id: number;
+    id: string;
     name: string;
     price: number;
     quantity: number;
