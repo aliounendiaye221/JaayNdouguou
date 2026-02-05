@@ -97,7 +97,7 @@ export default function FAQ() {
                         Vous ne trouvez pas la réponse à votre question ?
                     </p>
                     <a
-                        href="https://wa.me/221771234567"
+                        href="https://wa.me/221783822380"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-full hover:bg-green-700 transition-colors shadow-md hover:shadow-lg"

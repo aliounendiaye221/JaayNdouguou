@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Outfit, Inter } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "./context/CartContext";
@@ -17,9 +17,18 @@ const inter = Inter({
     display: "swap",
 });
 
+export const viewport: Viewport = {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+    viewportFit: "cover",
+};
+
 export const metadata: Metadata = {
     title: "JaayNdougou - Marché Digital de Légumes Frais | Dakar & Rufisque | Légumes Bio Sénégal",
-    description: "JaayNdougou, votre marché digital n°1 au Sénégal. Commandez vos légumes frais, bio et locaux en ligne. Livraison rapide à Dakar et Rufisque. Jaay Ndougou, mo yomb, mo gaaw ! Paiement Wave & Orange Money.",
+    description: "JaayNdougou, votre marché digital n°1 au Sénégal. Commandez vos légumes frais, bio et locaux en ligne. Livraison rapide à Dakar et Rufisque.",
+    // viewport moved to export const viewport
     keywords: ["légumes frais Dakar", "marché en ligne Sénégal", "livraison légumes Rufisque", "JaayNdougou", "e-commerce alimentaire Dakar", "produits frais Sénégal", "légumes bio Sénégal", "ndougou en ligne", "livraison rapide Dakar", "marché digital"],
     authors: [{ name: "ALIOUNE NDIAYE" }],
     creator: "ALIOUNE NDIAYE",
@@ -32,6 +41,15 @@ export const metadata: Metadata = {
     metadataBase: new URL('https://www.jaayndougou.sn'),
     alternates: {
         canonical: '/',
+    },
+    icons: {
+        icon: '/logo.png',
+        shortcut: '/logo.png',
+        apple: '/logo.png',
+        other: {
+            rel: 'apple-touch-icon-precomposed',
+            url: '/logo.png',
+        },
     },
     openGraph: {
         title: 'JaayNdougou - Marché Digital de Légumes Frais | Mo Yomb, Mo Gaaw',
@@ -87,7 +105,7 @@ export default function RootLayout({
             "addressLocality": "Dakar",
             "addressCountry": "SN"
         },
-        "telephone": "+221771234567",
+        "telephone": ["+221783822380", "+221786037913"],
         "email": "contact@jaayndougou.sn",
         "priceRange": "400-1000 FCFA",
         "servesCuisine": "Légumes frais",

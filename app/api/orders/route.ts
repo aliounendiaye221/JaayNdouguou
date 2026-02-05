@@ -6,6 +6,7 @@ import {
     initiateOrangeMoneyPayment,
 } from '@/app/utils/payment';
 import { z } from 'zod';
+import { auth } from '@/auth';
 
 // Validation schema
 const orderSchema = z.object({
@@ -67,9 +68,18 @@ export async function POST(request: NextRequest) {
 
             if (waveResult.success) {
                 paymentId = waveResult.transactionId;
-                // In simulation mode, mark as paid immediately
-                if (process.env.NODE_ENV !== 'production' || !process.env.WAVE_API_KEY) {
-                    paymentStatus = 'paid';
+                // If NO API KEY (Manual Mode), keep status PENDING for verification
+                if (!process.env.WAVE_API_KEY) {
+                    paymentStatus = 'pending';
+                } else if (process.env.NODE_ENV !== 'production') {
+                    // Dev simulation with keys? mark paid. 
+                    // But usually dev doesn't have keys. 
+                    // Let's assume without keys = manual transfer = pending
+                    paymentStatus = 'pending';
+                } else {
+                    // Production with keys, and success returned -> likely initiated, wait for webhook
+                    // But initiation success doesn't mean paid yet.
+                    paymentStatus = 'pending';
                 }
             } else {
                 return NextResponse.json(
@@ -88,9 +98,9 @@ export async function POST(request: NextRequest) {
 
             if (omResult.success) {
                 paymentId = omResult.transactionId;
-                // In simulation mode, mark as paid immediately
-                if (process.env.NODE_ENV !== 'production' || !process.env.ORANGE_MONEY_API_KEY) {
-                    paymentStatus = 'paid';
+                // Manual mode: Pending verification
+                if (!process.env.ORANGE_MONEY_API_KEY) {
+                    paymentStatus = 'pending';
                 }
             } else {
                 return NextResponse.json(
@@ -235,7 +245,12 @@ export async function GET(request: NextRequest) {
 
             return NextResponse.json({ order });
         } else {
-            // Get all orders (admin functionality)
+            // Get all orders (admin functionality) - Protect this!
+            const session = await auth();
+            if (!session) {
+                return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+            }
+
             const orders = await prisma.order.findMany({
                 orderBy: { createdAt: 'desc' },
                 take: 100,

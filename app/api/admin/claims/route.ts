@@ -1,0 +1,25 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@/app/utils/prisma';
+import { auth } from '@/auth';
+
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
+    const session = await auth();
+    if (!session) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    try {
+        const claims = await prisma.claim.findMany({
+            orderBy: { createdAt: 'desc' },
+            include: {
+                customer: true,
+                order: true
+            }
+        });
+        return NextResponse.json(claims);
+    } catch {
+        return NextResponse.json({ error: 'Failed to fetch claims' }, { status: 500 });
+    }
+}

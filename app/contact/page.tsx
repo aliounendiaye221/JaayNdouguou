@@ -110,10 +110,13 @@ ${formData.message}
                                     <div className="flex-shrink-0 w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                                         <Phone className="w-6 h-6 text-blue-600" />
                                     </div>
-                                    <div>
+                                    <div className="flex flex-col">
                                         <h3 className="font-semibold text-gray-900 mb-1">Téléphone</h3>
+                                        <a href="tel:+221783822380" className="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
+                                            +221 78 382 23 80 (Gestion)
+                                        </a>
                                         <a href="tel:+221786037913" className="text-emerald-600 hover:text-emerald-700 text-sm font-medium">
-                                            +221 78 603 79 13
+                                            +221 78 603 79 13 (Direct)
                                         </a>
                                     </div>
                                 </div>
@@ -152,17 +155,28 @@ ${formData.message}
                                         Contact Rapide
                                     </h3>
                                     <p className="text-sm text-gray-600 mb-4">
-                                        Besoin d'une réponse immédiate ? Contactez-nous sur WhatsApp !
+                                        Contactez-nous directement sur WhatsApp pour vos commandes ou questions.
                                     </p>
-                                    <a
-                                        href={`https://wa.me/${WHATSAPP_BUSINESS_NUMBER.replace(/[^0-9]/g, '')}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
-                                    >
-                                        <MessageCircle className="w-4 h-4" />
-                                        Ouvrir WhatsApp
-                                    </a>
+                                    <div className="flex flex-col gap-2">
+                                        <a
+                                            href="https://wa.me/221783822380"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium w-full"
+                                        >
+                                            <MessageCircle className="w-4 h-4" />
+                                            WhatsApp Gestion
+                                        </a>
+                                        <a
+                                            href="https://wa.me/221786037913"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm font-medium w-full"
+                                        >
+                                            <MessageCircle className="w-4 h-4" />
+                                            WhatsApp Support
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>

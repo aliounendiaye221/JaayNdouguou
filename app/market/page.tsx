@@ -8,7 +8,7 @@ import { Search, Filter, SlidersHorizontal } from "lucide-react";
 
 import { products } from "../data/products";
 
-const categories = ["Tout", "Légumes", "Tubercules"];
+const categories = ["Tout", "Légumes", "Tubercules", "Fruits"];
 
 export default function Market() {
     const [activeCategory, setActiveCategory] = useState("Tout");
@@ -101,7 +101,7 @@ export default function Market() {
                                 className="animate-fadeInUp"
                                 style={{ animationDelay: `${index * 0.05}s` }}
                             >
-                                <ProductCard product={product} />
+                                <ProductCard product={product} priority={index < 8} />
                             </div>
                         ))}
                     </div>

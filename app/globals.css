@@ -149,6 +149,38 @@ h6 {
     }
 }
 
+@keyframes fade-in-down {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-down {
+    animation: fade-in-down 0.5s ease-out forwards;
+}
+
+@keyframes bounce-slow {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-25%);
+    }
+}
+
+.animate-bounce-slow {
+    animation: bounce-slow 2s infinite;
+}
+
 /* Scrollbar */
 ::-webkit-scrollbar {
     width: 10px;
@@ -171,4 +203,75 @@ h6 {
 ::selection {
     background-color: #10B981;
     color: white;
+}
+
+/* Mobile Native Optimizations */
+@media (max-width: 768px) {
+
+    /* Larger touch targets */
+    button,
+    a,
+    input,
+    select {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    /* Prevent zoom on input focus */
+    input,
+    select,
+    textarea {
+        font-size: 16px;
+    }
+
+    /* Smooth scrolling */
+    * {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Native-like status bar spacing */
+.safe-area-top {
+    padding-top: env(safe-area-inset-top);
+}
+
+.safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Pull-to-refresh disable for better control */
+body {
+    overscroll-behavior-y: contain;
+}
+
+/* Remove tap highlights */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Native-like transitions */
+@media (prefers-reduced-motion: no-preference) {
+    .native-transition {
+        transition: transform 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+}
+
+/* Loading skeleton for mobile */
+.skeleton {
+    background: linear-gradient(90deg,
+            #f0f0f0 25%,
+            #e0e0e0 50%,
+            #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s ease-in-out infinite;
+}
+
+@keyframes loading {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
 }

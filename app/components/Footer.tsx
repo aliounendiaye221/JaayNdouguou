@@ -48,6 +48,33 @@ export default function Footer() {
                                     </Link>
                                 </li>
                             ))}
+                            <li>
+                                <Link
+                                    href="/legal/cgv"
+                                    className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group text-sm"
+                                >
+                                    <ArrowRight className="w-4 h-4 text-emerald-600 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                                    <span className="transform group-hover:translate-x-1 transition-transform duration-300">Conditions Générales de Vente</span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="/legal/mentions-legales"
+                                    className="text-gray-400 hover:text-emerald-400 transition-colors flex items-center gap-2 group text-sm"
+                                >
+                                    <ArrowRight className="w-4 h-4 text-emerald-600 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                                    <span className="transform group-hover:translate-x-1 transition-transform duration-300">Mentions Légales</span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link
+                                    href="/login"
+                                    className="text-gray-500 hover:text-emerald-400/80 transition-colors flex items-center gap-2 group text-sm mt-4"
+                                >
+                                    <ArrowRight className="w-3 h-3 text-emerald-900 opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300" />
+                                    <span className="transform group-hover:translate-x-1 transition-transform duration-300">Administration</span>
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 
@@ -61,11 +88,14 @@ export default function Footer() {
                                 </div>
                                 <span>Dakar & Rufisque,<br />Sénégal</span>
                             </li>
-                            <li className="flex items-center gap-4 text-gray-400 group">
+                            <li className="flex items-start gap-4 text-gray-400 group">
                                 <div className="p-2 bg-gray-800 rounded-lg group-hover:bg-emerald-900/50 transition-colors">
                                     <Phone className="w-5 h-5 text-emerald-500" />
                                 </div>
-                                <a href="tel:+221786037913" className="hover:text-emerald-400 transition-colors">+221 78 603 79 13</a>
+                                <div className="flex flex-col gap-1">
+                                    <a href="tel:+221783822380" className="hover:text-emerald-400 transition-colors">+221 78 382 23 80</a>
+                                    <a href="tel:+221786037913" className="hover:text-emerald-400 transition-colors">+221 78 603 79 13</a>
+                                </div>
                             </li>
                             <li className="flex items-center gap-4 text-gray-400 group">
                                 <div className="p-2 bg-gray-800 rounded-lg group-hover:bg-emerald-900/50 transition-colors">

@@ -1,5 +1,10 @@
-// WhatsApp Business Number
-export const WHATSAPP_BUSINESS_NUMBER = "+221786037913";
+// WhatsApp Business Numbers
+export const WHATSAPP_NUMBERS = [
+    { id: "maimouna", name: "Maimouna Sarr", number: "+221783822380", label: "Commandes & Gestion" },
+    { id: "alioune", name: "Alioune Ndiaye", number: "+221786037913", label: "Support Technique" }
+];
+
+export const WHATSAPP_BUSINESS_NUMBER = WHATSAPP_NUMBERS[0].number; // Primary number for automated links
 
 export interface CartItem {
     id: string;

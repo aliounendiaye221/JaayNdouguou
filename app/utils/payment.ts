@@ -22,7 +22,7 @@ export interface WavePaymentResponse {
 export async function initiateWavePayment(
     request: WavePaymentRequest
 ): Promise<WavePaymentResponse> {
-    const merchantNumber = process.env.WAVE_MERCHANT_NUMBER;
+    const merchantNumber = process.env.WAVE_MERCHANT_NUMBER || "783822380";
 
     // For development/testing: simulate Wave payment
     if (process.env.NODE_ENV !== 'production' || !process.env.WAVE_API_KEY) {
@@ -127,7 +127,7 @@ export interface OrangeMoneyPaymentResponse {
 export async function initiateOrangeMoneyPayment(
     request: OrangeMoneyPaymentRequest
 ): Promise<OrangeMoneyPaymentResponse> {
-    const merchantNumber = process.env.ORANGE_MONEY_MERCHANT_NUMBER;
+    const merchantNumber = process.env.ORANGE_MONEY_MERCHANT_NUMBER || "783822380";
 
     // For development/testing: simulate Orange Money payment
     if (process.env.NODE_ENV !== 'production' || !process.env.ORANGE_MONEY_API_KEY) {

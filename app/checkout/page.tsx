@@ -32,12 +32,59 @@ export default function Checkout() {
     e.preventDefault();
     setIsProcessing(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      const orderData = {
+        customerInfo: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: `${formData.phone}@jaayndougou.sn`, // Temporary email using phone if no email field
+          phone: formData.phone,
+        },
+        deliveryInfo: {
+          address: formData.address,
+          city: formData.city,
+          phone: formData.phone,
+          notes: formData.notes
+        },
+        items: items.map(item => ({
+          productId: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          unit: item.unit
+        })),
+        paymentMethod
+      };
 
-    // Clear cart and redirect
-    clearCart();
-    router.push("/checkout/success");
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // If payment URL is returned (e.g. Wave production), redirect to it
+        // Otherwise (manual/COD), go to success page
+        if (data.paymentUrl) {
+          window.location.href = data.paymentUrl;
+        } else {
+          clearCart();
+          // Pass order number to success page if needed
+          router.push(`/checkout/success?orderNumber=${data.order.orderNumber}`);
+        }
+      } else {
+        alert("Une erreur est survenue: " + (data.error || "Erreur inconnue"));
+        setIsProcessing(false);
+      }
+    } catch (error) {
+      console.error("Order error:", error);
+      alert("Erreur de connexion. Veuillez réessayer.");
+      setIsProcessing(false);
+    }
   };
 
   if (items.length === 0) {
@@ -199,46 +246,60 @@ export default function Checkout() {
                 </h2>
 
                 <div className="space-y-4">
-                  <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200'}`}>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="cod"
-                      checked={paymentMethod === "cod"}
-                      onChange={() => setPaymentMethod("cod")}
-                      className="h-5 w-5 text-emerald-600 focus:ring-emerald-500 border-gray-300"
-                    />
-                    <span className="ml-3 block text-sm font-bold text-gray-900">
-                      Paiement à la livraison (Espèces)
-                    </span>
+                  <label className={`block p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200'}`}>
+                    <div className="flex items-center">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="cod"
+                        checked={paymentMethod === "cod"}
+                        onChange={() => setPaymentMethod("cod")}
+                        className="h-5 w-5 text-emerald-600 focus:ring-emerald-500 border-gray-300"
+                      />
+                      <span className="ml-3 font-bold text-gray-900">Paiement à la livraison (Espèces)</span>
+                    </div>
                   </label>
 
-                  <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'wave' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-200'}`}>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="wave"
-                      checked={paymentMethod === "wave"}
-                      onChange={() => setPaymentMethod("wave")}
-                      className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300"
-                    />
-                    <span className="ml-3 block text-sm font-bold text-gray-900">
-                      Wave (Simulation)
-                    </span>
+                  <label className={`block p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'wave' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-blue-200'}`}>
+                    <div className="flex items-center mb-2">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="wave"
+                        checked={paymentMethod === "wave"}
+                        onChange={() => setPaymentMethod("wave")}
+                        className="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300"
+                      />
+                      <span className="ml-3 font-bold text-gray-900">Wave</span>
+                    </div>
+                    {paymentMethod === 'wave' && (
+                      <div className="ml-8 text-sm text-blue-800 bg-white p-3 rounded-lg border border-blue-100">
+                        <p className="font-semibold mb-1">Envoyez le montant au :</p>
+                        <p className="text-lg font-bold">78 603 79 13</p>
+                        <p className="text-xs mt-1 text-gray-500">Le livreur vérifiera la transaction à la livraison.</p>
+                      </div>
+                    )}
                   </label>
 
-                  <label className={`flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'om' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-200'}`}>
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="om"
-                      checked={paymentMethod === "om"}
-                      onChange={() => setPaymentMethod("om")}
-                      className="h-5 w-5 text-orange-600 focus:ring-orange-500 border-gray-300"
-                    />
-                    <span className="ml-3 block text-sm font-bold text-gray-900">
-                      Orange Money (Simulation)
-                    </span>
+                  <label className={`block p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'om' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-200'}`}>
+                    <div className="flex items-center mb-2">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="om"
+                        checked={paymentMethod === "om"}
+                        onChange={() => setPaymentMethod("om")}
+                        className="h-5 w-5 text-orange-600 focus:ring-orange-500 border-gray-300"
+                      />
+                      <span className="ml-3 font-bold text-gray-900">Orange Money</span>
+                    </div>
+                    {paymentMethod === 'om' && (
+                      <div className="ml-8 text-sm text-orange-800 bg-white p-3 rounded-lg border border-orange-100">
+                        <p className="font-semibold mb-1">Envoyez le montant au :</p>
+                        <p className="text-lg font-bold">78 603 79 13</p>
+                        <p className="text-xs mt-1 text-gray-500">Le livreur vérifiera la transaction à la livraison.</p>
+                      </div>
+                    )}
                   </label>
                 </div>
               </div>
@@ -254,7 +315,7 @@ export default function Checkout() {
                     Traitement...
                   </span>
                 ) : (
-                  `Payer ${finalTotal} FCFA`
+                  `Commander (${finalTotal} FCFA)`
                 )}
               </button>
             </form>

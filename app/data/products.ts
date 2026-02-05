@@ -1,3 +1,5 @@
+
+
 export interface Product {
     id: string;
     name: string;
@@ -81,16 +83,6 @@ export const products: Product[] = [
         category: "Légumes",
         description: "Concombres frais et rafraîchissants pour vos entrées."
     },
-    // Boucherie
-    {
-        id: "9",
-        name: "Poulet de Chair",
-        price: 3500,
-        unit: "unité",
-        image: "/poulet_de_chair.png",
-        category: "Boucherie",
-        description: "Poulet de chair frais, nettoyé et prêt à cuisiner. Poids moyen 1.5kg."
-    },
     // Légumes supplémentaires
     {
         id: "10",
@@ -142,7 +134,7 @@ export const products: Product[] = [
         name: "Menthe Fraîche",
         price: 200,
         unit: "botte",
-        image: "https://images.unsplash.com/photo-1628556270448-4d4e4148e1b1?auto=format&fit=crop&q=80&w=1000",
+        image: "/menthe_fraiche.png",
         category: "Herbes",
         description: "Menthe fraîche pour le thé ou vos salades."
     },
@@ -151,7 +143,7 @@ export const products: Product[] = [
         name: "Piment Fort",
         price: 1500,
         unit: "kg",
-        image: "https://images.unsplash.com/photo-1604405706197-2e83e8f3c0ab?auto=format&fit=crop&q=80&w=1000",
+        image: "/piment_fort.png",
         category: "Épices",
         description: "Piments forts pour relever vos plats."
     },
@@ -160,7 +152,7 @@ export const products: Product[] = [
         name: "Ail",
         price: 800,
         unit: "kg",
-        image: "https://images.unsplash.com/photo-1588347818036-8e1cfff2e337?auto=format&fit=crop&q=80&w=1000",
+        image: "/ail.png",
         category: "Condiments",
         description: "Ail frais et aromatique pour vos préparations culinaires."
     },
@@ -169,8 +161,44 @@ export const products: Product[] = [
         name: "Gingembre",
         price: 1200,
         unit: "kg",
-        image: "https://images.unsplash.com/photo-1599894433780-8e91c5ef0c4f?auto=format&fit=crop&q=80&w=1000",
+        image: "/gingembre.png",
         category: "Épices",
         description: "Gingembre frais pour vos tisanes et plats épicés."
     },
+    {
+        id: "19",
+        name: "Pomme",
+        price: 1500,
+        unit: "kg",
+        image: "/pomme.png",
+        category: "Fruits",
+        description: "Pommes fraîches et croquantes, importées pour une qualité optimale."
+    },
+    {
+        id: "20",
+        name: "Banane",
+        price: 800,
+        unit: "kg",
+        image: "/banane.png",
+        category: "Fruits",
+        description: "Bananes mûres et sucrées, idéales pour vos collations."
+    },
+    {
+        id: "21",
+        name: "Orange",
+        price: 1200,
+        unit: "kg",
+        image: "/orange.png",
+        category: "Fruits",
+        description: "Oranges juteuses et riches en vitamine C."
+    },
+    {
+        id: "22",
+        name: "Mangue",
+        price: 1000,
+        unit: "kg",
+        image: "/mangue.png",
+        category: "Fruits",
+        description: "Mangues locales savoureuses, fondantes et sucrées."
+    }
 ];

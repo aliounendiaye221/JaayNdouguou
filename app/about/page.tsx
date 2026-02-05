@@ -62,7 +62,7 @@ export default function AboutPage() {
                 </div>
 
                 {/* Founder Section */}
-                <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+                <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl overflow-hidden border border-gray-100 mb-12">
                     <div className="grid md:grid-cols-2 gap-0">
                         {/* Image Side */}
                         <div className="relative h-96 md:h-auto bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center">
@@ -140,6 +140,76 @@ export default function AboutPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Team Section - Maimouna Sarr */}
+                <div className="bg-gradient-to-br from-white to-gray-50 rounded-3xl shadow-2xl overflow-hidden border border-gray-100">
+                    <div className="grid md:grid-cols-2 gap-0">
+                        {/* Content Side */}
+                        <div className="p-8 md:p-12 flex flex-col justify-center order-2 md:order-1">
+                            <div className="inline-block px-4 py-2 bg-gradient-to-r from-orange-100 to-yellow-100 rounded-full mb-4 w-fit">
+                                <span className="text-orange-700 font-bold text-sm">Gestionnaire & Administratrice</span>
+                            </div>
+
+                            <h2 className="text-4xl font-heading font-bold bg-gradient-to-r from-gray-900 to-orange-800 bg-clip-text text-transparent mb-4">
+                                Maimouna Sarr
+                            </h2>
+
+                            <p className="text-lg text-gray-600 mb-6 leading-relaxed">
+                                Étudiante en Administration Économique et Sociale (AES), dévouée à la gestion rigoureuse
+                                et à l'optimisation des opérations de JaayNdougou.
+                            </p>
+
+                            <div className="space-y-4">
+                                <p className="text-gray-700 leading-relaxed">
+                                    📊 <strong className="text-orange-700">Rôle:</strong> Gestionnaire du site et Administratrice comptable.
+                                </p>
+                                <p className="text-gray-700 leading-relaxed">
+                                    🤝 <strong className="text-orange-700">Responsabilité:</strong> Chargée des relations avec les fournisseurs pour garantir une chaîne d'approvisionnement fluide.
+                                </p>
+                                <p className="text-gray-700 leading-relaxed">
+                                    🎓 <strong className="text-orange-700">Formation:</strong> Expertise en administration et gestion sociale.
+                                </p>
+                            </div>
+
+                            {/* Contact Information */}
+                            <div className="space-y-4 pt-6 border-t border-gray-200 mt-6">
+                                <h3 className="text-xl font-bold text-gray-900 mb-4">Contact</h3>
+
+                                <a
+                                    href="https://wa.me/221783822380"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-3 text-gray-700 hover:text-orange-600 transition-colors group"
+                                >
+                                    <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-yellow-600 rounded-full flex items-center justify-center shadow-md group-hover:shadow-lg transition-all">
+                                        <Phone className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-xs text-orange-600 font-bold uppercase tracking-wider">WhatsApp Commandes</span>
+                                        <span className="font-medium">+221 78 382 23 80</span>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+                        {/* Image Side */}
+                        <div className="relative h-96 md:h-auto bg-gradient-to-br from-orange-500 to-yellow-600 flex items-center justify-center order-1 md:order-2">
+                            <div className="text-center p-8">
+                                <div className="w-48 h-48 mx-auto mb-6 rounded-full bg-white/20 backdrop-blur-sm border-4 border-white/30 shadow-2xl flex items-center justify-center">
+                                    <div className="w-40 h-40 rounded-full bg-gradient-to-br from-orange-400 to-yellow-500 flex items-center justify-center text-white text-6xl font-bold shadow-inner">
+                                        MS
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <div className="inline-block px-6 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg">
+                                        <span className="text-orange-700 font-bold">🇸🇳 Sénégal</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
 
                 {/* Why JaayNdougou Section */}
                 <div className="mt-16">

@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">JaayNdougou</string>
-    <string name="title_activity_main">JaayNdougou</string>
-    <string name="package_name">com.jaayndougou.app</string>
-    <string name="custom_url_scheme">com.jaayndougou.app</string>
-</resources>
