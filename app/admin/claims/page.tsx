@@ -18,17 +18,26 @@ export default function ClaimsPage() {
 
     useEffect(() => {
         fetch('/api/admin/claims')
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error! status: ${res.status}`);
+                }
+                return res.json();
+            })
             .then(data => {
-                if (Array.isArray(data) && data.length > 0) {
+                if (Array.isArray(data)) {
                     setClaims(data);
+                } else if (data.error) {
+                    console.error('API Error:', data.error);
+                    setClaims([]);
                 } else {
-                    setClaims(getMockClaims());
+                    setClaims([]);
                 }
                 setLoading(false);
             })
-            .catch(() => {
-                setClaims(getMockClaims());
+            .catch((error) => {
+                console.error('Failed to fetch claims:', error);
+                setClaims([]);
                 setLoading(false);
             });
     }, []);
@@ -144,27 +153,3 @@ export default function ClaimsPage() {
         </div>
     );
 }
-
-function getMockClaims() {
-    return [
-        {
-            id: "c1",
-            subject: "Produit manquant dans la livraison",
-            description: "Bonjour, j'ai reçu ma commande ce matin mais il manquait les 2kg d'oignons que j'avais payés. Pouvez-vous vérifier ?",
-            status: "pending",
-            createdAt: new Date().toISOString(),
-            customer: { firstName: "Aminata", lastName: "Sow", phone: "77 888 22 11" },
-            order: { orderNumber: "ORD-2026-X88" }
-        },
-        {
-            id: "c2",
-            subject: "Retard de livraison significatif",
-            description: "La livraison a pris plus de 4 heures alors qu'il était mentionné 2 heures maximum. Les légumes sont arrivés un peu flétris.",
-            status: "pending",
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            customer: { firstName: "Ibrahim", lastName: "Fall", phone: "78 333 44 55" },
-            order: { orderNumber: "ORD-2026-V12" }
-        }
-    ];
-}
-

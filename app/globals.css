@@ -276,3 +276,25 @@ body {
         background-position: -200% 0;
     }
 }
+
+/* Print Styles for Invoices */
+@media print {
+    body {
+        background: white !important;
+    }
+
+    .print\:hidden {
+        display: none !important;
+    }
+
+    @page {
+        margin: 2cm;
+        size: A4;
+    }
+    
+    /* Force print-specific styles */
+    #invoice {
+        box-shadow: none !important;
+        border: none !important;
+    }
+}

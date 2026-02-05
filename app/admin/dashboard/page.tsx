@@ -1,18 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
 import {
-    TrendingUp,
-    Users,
     ShoppingBag,
     AlertCircle,
-    Loader2,
-    ArrowUpRight,
-    ArrowDownRight,
-    Package,
     Activity,
     Plus,
-    Calendar,
-    Search
+    Calendar
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -23,10 +16,9 @@ export default function DashboardPage() {
         fetch('/api/admin/stats')
             .then(res => res.json())
             .then(statsData => {
-                // If data is empty or fetch fails, we'll use our mock data for the 2026 feel
-                if (!statsData || statsData.error || statsData.stats.totalOrders === 0) {
-                    console.warn("Using mock data for demonstration");
-                    setData(getMockData());
+                if (!statsData || statsData.error) {
+                    console.error("Erreur lors du chargement des statistiques");
+                    setData({ stats: { totalOrders: 0, ordersToday: 0, totalRevenue: 0, pendingClaims: 0 }, recentOrders: [] });
                 } else {
                     setData(statsData);
                 }
@@ -34,7 +26,7 @@ export default function DashboardPage() {
             })
             .catch(err => {
                 console.error(err);
-                setData(getMockData());
+                setData({ stats: { totalOrders: 0, ordersToday: 0, totalRevenue: 0, pendingClaims: 0 }, recentOrders: [] });
                 setLoading(false);
             });
     }, []);
@@ -68,7 +60,9 @@ export default function DashboardPage() {
                     </div>
                     <button className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-slate-200 hover:bg-emerald-600 hover:shadow-emerald-100 transition-all active:scale-95">
                         <Plus className="w-5 h-5" />
-                        <span>Nouveau Produit</span>
+                        <span>
+                            <a href="/admin/orders">Gérer les Commandes</a>
+                        </span>
                     </button>
                 </div>
             </div>
@@ -87,27 +81,7 @@ export default function DashboardPage() {
                             </div>
                         </div>
                         <h3 className="text-4xl font-black text-slate-900">{(stats.totalRevenue || 0).toLocaleString()} FCFA</h3>
-                        <div className="flex items-center gap-2 mt-2">
-                            <span className="flex items-center gap-0.5 text-emerald-600 font-bold text-sm bg-emerald-50 px-2 py-0.5 rounded-full">
-                                <ArrowUpRight className="w-4 h-4" />
-                                +12.5%
-                            </span>
-                            <span className="text-slate-400 text-xs font-medium">vs mois dernier</span>
-                        </div>
-                    </div>
-
-                    <div className="mt-8 flex items-end gap-1.5 h-20">
-                        {[40, 60, 45, 80, 55, 90, 70, 85, 60, 95, 80, 100].map((h, i) => (
-                            <div
-                                key={i}
-                                className="flex-1 bg-emerald-100 rounded-t-sm transition-all duration-500 hover:bg-emerald-500 group/bar relative"
-                                style={{ height: `${h}%` }}
-                            >
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 bg-slate-900 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap z-10">
-                                    {(h * 5000).toLocaleString()} F
-                                </div>
-                            </div>
-                        ))}
+                        <p className="text-slate-500 text-sm font-medium mt-2">Montant total des commandes payées</p>
                     </div>
                 </div>
 
@@ -120,26 +94,20 @@ export default function DashboardPage() {
                         </div>
                         <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Commandes Totales</p>
                         <h3 className="text-3xl font-black text-slate-900 mt-1">{stats.totalOrders || 0}</h3>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-emerald-600 font-bold text-sm mt-4">
-                        <ArrowUpRight className="w-4 h-4" />
-                        <span>+8.2%</span>
+                        <p className="text-slate-500 text-xs font-medium mt-2">Nombre de commandes reçues</p>
                     </div>
                 </div>
 
-                {/* Customers Stat */}
+                {/* Orders Today */}
                 <div className="bg-white rounded-[32px] p-8 shadow-sm border border-slate-100 flex flex-col justify-between relative overflow-hidden group">
                     <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-orange-50 rounded-full opacity-50 blur-2xl group-hover:scale-125 transition-transform duration-700" />
                     <div>
                         <div className="bg-orange-50 text-orange-600 p-3 rounded-2xl w-fit mb-6">
-                            <Users className="w-6 h-6" />
+                            <Calendar className="w-6 h-6" />
                         </div>
-                        <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Utilisateurs Actifs</p>
-                        <h3 className="text-3xl font-black text-slate-900 mt-1">{Math.floor((stats.totalOrders || 0) * 0.7) + 12}</h3>
-                    </div>
-                    <div className="flex items-center gap-1.5 text-emerald-600 font-bold text-sm mt-4">
-                        <ArrowUpRight className="w-4 h-4" />
-                        <span>+24.3%</span>
+                        <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">Commandes Aujourd'hui</p>
+                        <h3 className="text-3xl font-black text-slate-900 mt-1">{stats.ordersToday || 0}</h3>
+                        <p className="text-slate-500 text-xs font-medium mt-2">Commandes du jour</p>
                     </div>
                 </div>
             </div>
@@ -153,7 +121,9 @@ export default function DashboardPage() {
                             <h2 className="text-xl font-black text-slate-900">Commandes Récentes</h2>
                             <p className="text-slate-400 text-sm font-medium mt-0.5">Dernières transactions effectuées sur le marché.</p>
                         </div>
-                        <button className="text-slate-500 font-bold text-xs hover:text-emerald-600 transition-colors uppercase tracking-widest">Voir tout</button>
+                        <button className="text-slate-500 font-bold text-xs hover:text-emerald-600 transition-colors uppercase tracking-widest">
+                            <a href="/admin/orders">Voir tout</a>
+                        </button>
                     </div>
                     <div className="overflow-x-auto">
                         <table className="w-full text-left">
@@ -183,16 +153,32 @@ export default function DashboardPage() {
                                         </td>
                                         <td className="px-8 py-5 text-center">
                                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest
-                                                ${order.status === 'completed' ? 'bg-emerald-50 text-emerald-600' :
+                                                ${order.status === 'delivered' || order.status === 'completed' ? 'bg-emerald-50 text-emerald-600' :
                                                     order.status === 'pending' ? 'bg-orange-50 text-orange-600 shadow-[0_4px_12px_rgba(249,115,22,0.1)]' :
+                                                    order.status === 'confirmed' ? 'bg-blue-50 text-blue-600' :
+                                                    order.status === 'preparing' ? 'bg-purple-50 text-purple-600' :
+                                                    order.status === 'delivering' ? 'bg-indigo-50 text-indigo-600' :
+                                                    order.status === 'cancelled' ? 'bg-red-50 text-red-600' :
                                                         'bg-slate-50 text-slate-500'}`}>
-                                                <span className={`w-1.5 h-1.5 rounded-full mr-2 ${order.status === 'completed' ? 'bg-emerald-500' : order.status === 'pending' ? 'bg-orange-500 animate-pulse' : 'bg-slate-400'}`} />
-                                                {order.status === 'completed' ? 'Livré' : order.status === 'pending' ? 'En cours' : order.status}
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-2 
+                                                    ${order.status === 'delivered' || order.status === 'completed' ? 'bg-emerald-500' : 
+                                                      order.status === 'pending' ? 'bg-orange-500 animate-pulse' : 
+                                                      order.status === 'confirmed' ? 'bg-blue-500' :
+                                                      order.status === 'preparing' ? 'bg-purple-500' :
+                                                      order.status === 'delivering' ? 'bg-indigo-500 animate-pulse' :
+                                                      order.status === 'cancelled' ? 'bg-red-500' :
+                                                      'bg-slate-400'}`} />
+                                                {order.status === 'delivered' || order.status === 'completed' ? 'Livré' : 
+                                                 order.status === 'pending' ? 'En attente' : 
+                                                 order.status === 'confirmed' ? 'Confirmé' :
+                                                 order.status === 'preparing' ? 'En préparation' :
+                                                 order.status === 'delivering' ? 'En livraison' :
+                                                 order.status === 'cancelled' ? 'Annulé' :
+                                                 order.status}
                                             </span>
                                         </td>
                                         <td className="px-8 py-5">
                                             <div className="text-sm font-black text-slate-900">{order.total.toLocaleString()} FCFA</div>
-                                            <div className="text-[10px] font-bold text-emerald-500">Paiement validé</div>
                                         </td>
                                         <td className="px-8 py-5 text-right">
                                             <div className="text-sm font-bold text-slate-500">{new Date(order.createdAt).toLocaleDateString('fr-SN')}</div>
@@ -205,37 +191,8 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
-                {/* Right Panel: Performance & Notifications */}
+                {/* Right Panel: Notifications */}
                 <div className="space-y-8 lg:col-span-1">
-                    {/* Health Card */}
-                    <div className="bg-slate-900 rounded-[32px] p-8 text-white relative overflow-hidden group shadow-2xl shadow-slate-200">
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-emerald-500 rounded-full -mr-24 -mt-24 opacity-20 blur-3xl group-hover:opacity-40 transition-opacity" />
-                        <h4 className="text-lg font-black mb-6">Santé du Marché</h4>
-                        <div className="space-y-6 relative">
-                            {[
-                                { label: 'Livraison Rapide', value: 98, color: 'bg-emerald-500' },
-                                { label: 'Qualité Produits', value: 94, color: 'bg-blue-400' },
-                                { label: 'Stock Disponible', value: 72, color: 'bg-orange-400' },
-                            ].map((item, i) => (
-                                <div key={i} className="space-y-2">
-                                    <div className="flex justify-between text-xs font-bold uppercase tracking-tighter">
-                                        <span className="text-slate-400">{item.label}</span>
-                                        <span className="text-white">{item.value}%</span>
-                                    </div>
-                                    <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                                        <div
-                                            className={`h-full ${item.color} rounded-full transition-all duration-1000 ease-out`}
-                                            style={{ width: `${item.value}%` }}
-                                        />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                        <button className="w-full mt-8 py-3 bg-white/10 hover:bg-white/20 rounded-2xl text-xs font-black uppercase tracking-widest transition-all">
-                            Voir Rapport Détaillé
-                        </button>
-                    </div>
-
                     {/* Claims Summary */}
                     <div className={`bg-white rounded-[32px] p-8 border shadow-sm transition-all ${stats.pendingClaims > 0 ? 'border-red-100 bg-red-50/10' : 'border-slate-100'}`}>
                         <div className="flex items-center justify-between mb-4">
@@ -254,59 +211,5 @@ export default function DashboardPage() {
             </div>
         </div>
     );
-}
-
-// Logic to generate high-end mock data if real data is missing
-function getMockData() {
-    return {
-        stats: {
-            totalOrders: 142,
-            ordersToday: 8,
-            pendingClaims: 3,
-            totalRevenue: 850750
-        },
-        recentOrders: [
-            {
-                id: "m1",
-                orderNumber: "JN-ORD-2026-X89",
-                total: 12500,
-                status: "pending",
-                createdAt: new Date().toISOString(),
-                customer: { firstName: "Moussa", lastName: "Sarr", phone: "77 123 45 67" }
-            },
-            {
-                id: "m2",
-                orderNumber: "JN-ORD-2026-V42",
-                total: 8200,
-                status: "completed",
-                createdAt: new Date(Date.now() - 3600000).toISOString(),
-                customer: { firstName: "Awa", lastName: "Diop", phone: "78 123 45 67" }
-            },
-            {
-                id: "m3",
-                orderNumber: "JN-ORD-2026-L55",
-                total: 24500,
-                status: "completed",
-                createdAt: new Date(Date.now() - 7200000).toISOString(),
-                customer: { firstName: "Abdou", lastName: "Ndiaye", phone: "76 123 45 67" }
-            },
-            {
-                id: "m4",
-                orderNumber: "JN-ORD-2026-T12",
-                total: 5400,
-                status: "completed",
-                createdAt: new Date(Date.now() - 10800000).toISOString(),
-                customer: { firstName: "Fatou", lastName: "Gueye", phone: "70 123 45 67" }
-            },
-            {
-                id: "m5",
-                orderNumber: "JN-ORD-2026-Q01",
-                total: 15900,
-                status: "completed",
-                createdAt: new Date(Date.now() - 14400000).toISOString(),
-                customer: { firstName: "Oumar", lastName: "Kane", phone: "75 123 45 67" }
-            }
-        ]
-    };
 }
 

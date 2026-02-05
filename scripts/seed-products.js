@@ -1,16 +1,7 @@
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
-
-export interface Product {
-    id: string;
-    name: string;
-    price: number;
-    unit: string;
-    image: string;
-    category: string;
-    description?: string;
-}
-
-export const products: Product[] = [
+const products = [
     {
         id: "oignon-local",
         name: "Oignon Local",
@@ -201,3 +192,73 @@ export const products: Product[] = [
         description: "Mangues locales savoureuses, fondantes et sucrées."
     }
 ];
+
+async function seedProducts() {
+    try {
+        console.log('🌱 Ajout des produits dans la base de données...\n');
+        
+        let added = 0;
+        let updated = 0;
+        let errors = 0;
+
+        for (const product of products) {
+            try {
+                const existing = await prisma.product.findUnique({
+                    where: { id: product.id }
+                });
+
+                if (existing) {
+                    await prisma.product.update({
+                        where: { id: product.id },
+                        data: {
+                            name: product.name,
+                            price: product.price,
+                            unit: product.unit,
+                            image: product.image,
+                            category: product.category,
+                            description: product.description,
+                            stock: 100,
+                            isAvailable: true
+                        }
+                    });
+                    console.log(`✏️  ${product.name} - mis à jour`);
+                    updated++;
+                } else {
+                    await prisma.product.create({
+                        data: {
+                            id: product.id,
+                            name: product.name,
+                            price: product.price,
+                            unit: product.unit,
+                            image: product.image,
+                            category: product.category,
+                            description: product.description,
+                            stock: 100,
+                            isAvailable: true
+                        }
+                    });
+                    console.log(`✅ ${product.name} - ajouté`);
+                    added++;
+                }
+            } catch (error) {
+                console.error(`❌ ${product.name} - erreur:`, error.message);
+                errors++;
+            }
+        }
+
+        console.log('\n📊 Résumé:');
+        console.log(`   ✅ ${added} produits ajoutés`);
+        console.log(`   ✏️  ${updated} produits mis à jour`);
+        if (errors > 0) {
+            console.log(`   ❌ ${errors} erreurs`);
+        }
+        console.log(`\n🎉 Total: ${added + updated} produits dans la base de données!`);
+        
+    } catch (error) {
+        console.error('❌ Erreur globale:', error);
+    } finally {
+        await prisma.$disconnect();
+    }
+}
+
+seedProducts();

@@ -44,6 +44,8 @@ model Customer {
   orders    Order[]
   claims    Claim[]
   
+  @@index([phone])
+  @@index([createdAt(sort: Desc)])
   @@map("Customer")
 }
 
@@ -76,6 +78,11 @@ model Order {
   items           OrderItem[]
   claims          Claim[]
   
+  @@index([createdAt(sort: Desc)])
+  @@index([status])
+  @@index([paymentStatus])
+  @@index([customerId])
+  @@index([createdAt(sort: Desc), status])
   @@map("Order")
 }
 

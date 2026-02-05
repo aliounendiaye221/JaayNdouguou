@@ -11,30 +11,56 @@ async function getUser(email: string) {
         return user;
     } catch (error) {
         console.error('Failed to fetch user:', error);
-        throw new Error('Failed to fetch user.');
+        return null;
     }
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
     ...authConfig,
+    secret: process.env.NEXTAUTH_SECRET,
+    trustHost: true,
     providers: [
         Credentials({
+            credentials: {
+                email: { label: "Email", type: "email" },
+                password: { label: "Password", type: "password" }
+            },
             async authorize(credentials) {
-                const parsedCredentials = z
-                    .object({ email: z.string().email(), password: z.string().min(6) })
-                    .safeParse(credentials);
+                try {
+                    const parsedCredentials = z
+                        .object({ email: z.string().email(), password: z.string().min(6) })
+                        .safeParse(credentials);
 
-                if (parsedCredentials.success) {
+                    if (!parsedCredentials.success) {
+                        console.error('Invalid credentials format');
+                        return null;
+                    }
+
                     const { email, password } = parsedCredentials.data;
                     const user = await getUser(email);
-                    if (!user) return null;
+                    
+                    if (!user) {
+                        console.error('User not found:', email);
+                        return null;
+                    }
 
                     const passwordsMatch = await bcrypt.compare(password, user.password);
-                    if (passwordsMatch) return user;
-                }
+                    
+                    if (!passwordsMatch) {
+                        console.error('Invalid password for user:', email);
+                        return null;
+                    }
 
-                console.log('Invalid credentials');
-                return null;
+                    return {
+                        id: user.id,
+                        email: user.email,
+                        name: user.name,
+                        role: user.role,
+                    };
+                } catch (error) {
+                    console.error('Authorization error:', error);
+                    return null;
+                }
             },
         }),
     ],

@@ -12,51 +12,159 @@ export async function GET() {
     }
 
     try {
+        const now = new Date();
+        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - 7);
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
         const [
             totalOrders,
             ordersToday,
-            recentOrders,
+            ordersThisWeek,
+            ordersThisMonth,
+            paidOrders,
+            totalRevenue,
+            revenueToday,
+            revenueThisWeek,
+            revenueThisMonth,
+            pendingOrders,
+            deliveringOrders,
+            deliveredOrders,
+            cancelledOrders,
             pendingClaims,
-            totalRevenue
+            recentOrders
         ] = await Promise.all([
-            // Total Orders
+            // Compteurs de commandes
             prisma.order.count(),
-
-            // Orders Today
             prisma.order.count({
+                where: { createdAt: { gte: startOfDay } }
+            }),
+            prisma.order.count({
+                where: { createdAt: { gte: startOfWeek } }
+            }),
+            prisma.order.count({
+                where: { createdAt: { gte: startOfMonth } }
+            }),
+            
+            // Commandes payées
+            prisma.order.count({
+                where: { paymentStatus: 'paid' }
+            }),
+
+            // Revenus
+            prisma.order.aggregate({
+                where: { paymentStatus: 'paid' },
+                _sum: { total: true }
+            }),
+            prisma.order.aggregate({
                 where: {
-                    createdAt: {
-                        gte: new Date(new Date().setHours(0, 0, 0, 0))
-                    }
-                }
+                    paymentStatus: 'paid',
+                    createdAt: { gte: startOfDay }
+                },
+                _sum: { total: true }
+            }),
+            prisma.order.aggregate({
+                where: {
+                    paymentStatus: 'paid',
+                    createdAt: { gte: startOfWeek }
+                },
+                _sum: { total: true }
+            }),
+            prisma.order.aggregate({
+                where: {
+                    paymentStatus: 'paid',
+                    createdAt: { gte: startOfMonth }
+                },
+                _sum: { total: true }
             }),
 
-            // Recent Orders
-            prisma.order.findMany({
-                take: 5,
-                orderBy: { createdAt: 'desc' },
-                include: { customer: true }
+            // Statuts des commandes
+            prisma.order.count({
+                where: { status: 'pending' }
+            }),
+            prisma.order.count({
+                where: { status: { in: ['confirmed', 'preparing', 'delivering'] } }
+            }),
+            prisma.order.count({
+                where: { status: 'delivered' }
+            }),
+            prisma.order.count({
+                where: { status: 'cancelled' }
             }),
 
-            // Pending Claims
+            // Réclamations en attente
             prisma.claim.count({
                 where: { status: 'pending' }
             }),
 
-            // Total Revenue (Paid Orders)
-            prisma.order.aggregate({
-                _sum: { total: true },
-                where: { paymentStatus: 'paid' }
+            // Commandes récentes
+            prisma.order.findMany({
+                take: 10,
+                orderBy: { createdAt: 'desc' },
+                include: {
+                    customer: {
+                        select: {
+                            id: true,
+                            firstName: true,
+                            lastName: true,
+                            phone: true,
+                            email: true
+                        }
+                    },
+                    items: {
+                        include: {
+                            product: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    price: true,
+                                    image: true
+                                }
+                            }
+                        }
+                    }
+                }
             })
         ]);
 
+        // Calcul du taux de conversion
+        const conversionRate = totalOrders > 0 ? ((paidOrders / totalOrders) * 100).toFixed(1) : '0';
+        
+        // Calcul de la valeur moyenne des commandes
+        const averageOrderValue = paidOrders > 0 
+            ? Math.round((totalRevenue._sum.total || 0) / paidOrders)
+            : 0;
+
+        const stats = {
+            // Commandes
+            totalOrders,
+            ordersToday,
+            ordersThisWeek,
+            ordersThisMonth,
+            paidOrders,
+            pendingOrders,
+            deliveringOrders,
+            deliveredOrders,
+            cancelledOrders,
+
+            // Revenus
+            totalRevenue: totalRevenue._sum.total || 0,
+            revenueToday: revenueToday._sum.total || 0,
+            revenueThisWeek: revenueThisWeek._sum.total || 0,
+            revenueThisMonth: revenueThisMonth._sum.total || 0,
+            averageOrderValue,
+
+            // Métriques
+            conversionRate: parseFloat(conversionRate),
+            pendingClaims,
+
+            // Timestamp pour le cache
+            lastUpdated: new Date().toISOString()
+        };
+
         return NextResponse.json({
-            stats: {
-                totalOrders,
-                ordersToday,
-                pendingClaims,
-                totalRevenue: totalRevenue._sum.total || 0
-            },
+            stats,
             recentOrders
         });
 
