@@ -1,0 +1,40 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npx prisma generate && next build",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "env": {
+    "NEXTAUTH_SECRET": {
+      "@description": "Secret for NextAuth.js - Generate with: openssl rand -base64 32"
+    },
+    "DATABASE_URL": {
+      "@description": "PostgreSQL database URL from Vercel Postgres"
+    },
+    "DIRECT_URL": {
+      "@description": "Direct connection URL for Prisma migrations"
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "origin-when-cross-origin"
+        }
+      ]
+    }
+  ]
+}
