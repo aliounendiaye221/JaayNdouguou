@@ -28,10 +28,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                 sameSite: 'lax',
                 path: '/',
                 secure: process.env.NODE_ENV === 'production',
-                domain: process.env.NODE_ENV === 'production' ? '.jaayndouguou.app' : undefined,
+                // Pas de domaine pour éviter les problèmes cross-domain
             },
         },
     },
+    session: {
+        strategy: 'jwt',
+        maxAge: 30 * 24 * 60 * 60, // 30 jours
+    },
+    debug: process.env.NODE_ENV === 'development',
     providers: [
         Credentials({
             credentials: {
