@@ -3,6 +3,19 @@
   "buildCommand": "npx prisma generate && next build",
   "framework": "nextjs",
   "installCommand": "npm install",
+  "redirects": [
+    {
+      "source": "/:path((?!www).*)",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.jaayndouguou.app"
+        }
+      ],
+      "destination": "https://jaayndouguou.app/:path*",
+      "permanent": true
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
