@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { Plus, ShoppingBag } from "lucide-react";
@@ -15,7 +16,7 @@ export interface Product {
     description?: string;
 }
 
-export default function ProductCard({ product, priority = false }: { product: Product, priority?: boolean }) {
+function ProductCard({ product, priority = false }: { product: Product, priority?: boolean }) {
     const { addToCart } = useCart();
 
     return (
@@ -89,3 +90,5 @@ export default function ProductCard({ product, priority = false }: { product: Pr
         </div>
     );
 }
+
+export default memo(ProductCard);

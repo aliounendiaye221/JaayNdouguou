@@ -53,3 +53,5 @@ prisma/dev.db-journal
 
 # Prisma migrations (keep these!)
 !prisma/migrations/
+
+.vercel

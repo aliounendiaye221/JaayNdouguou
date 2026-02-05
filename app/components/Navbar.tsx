@@ -4,7 +4,13 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ShoppingCart, Menu, Search, X, User } from "lucide-react";
 import { useCart } from "../context/CartContext";
-import SearchModal from "./SearchModal";
+import dynamic from 'next/dynamic';
+
+// Lazy load SearchModal
+const SearchModal = dynamic(() => import('./SearchModal'), {
+    ssr: false,
+    loading: () => null
+});
 
 export default function Navbar() {
     const { itemCount } = useCart();
@@ -13,10 +19,17 @@ export default function Navbar() {
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
+        let ticking = false;
         const handleScroll = () => {
-            setScrolled(window.scrollY > 20);
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    setScrolled(window.scrollY > 20);
+                    ticking = false;
+                });
+                ticking = true;
+            }
         };
-        window.addEventListener("scroll", handleScroll);
+        window.addEventListener("scroll", handleScroll, { passive: true });
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 

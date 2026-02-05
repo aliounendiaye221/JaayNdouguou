@@ -2,17 +2,20 @@ import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ProductCard, { Product } from "./components/ProductCard";
 import PromoBanner from "./components/PromoBanner";
-import Testimonials from "./components/Testimonials";
-import FAQ from "./components/FAQ";
-import Footer from "./components/Footer";
-
+import dynamic from 'next/dynamic';
 import { products } from "./data/products";
-
-const featuredProducts = products.slice(0, 4);
-
 import { ArrowRight, Leaf, Truck, ShieldCheck, TrendingUp } from "lucide-react";
 
-// ... (imports existants)
+// Lazy load components below the fold
+const Testimonials = dynamic(() => import('./components/Testimonials'), {
+    loading: () => <div className="h-96 animate-pulse bg-gray-100 rounded-lg" />
+});
+const FAQ = dynamic(() => import('./components/FAQ'), {
+    loading: () => <div className="h-96 animate-pulse bg-gray-100 rounded-lg" />
+});
+const Footer = dynamic(() => import('./components/Footer'));
+
+const featuredProducts = products.slice(0, 4);
 
 export default function Home() {
     return (
