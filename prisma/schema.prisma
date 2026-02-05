@@ -27,7 +27,7 @@ model Product {
   
   orderItems  OrderItem[]
   
-  @@map("products")
+  @@map("Product")
 }
 
 model Customer {
@@ -44,7 +44,7 @@ model Customer {
   orders    Order[]
   claims    Claim[]
   
-  @@map("customers")
+  @@map("Customer")
 }
 
 model Order {
@@ -76,7 +76,7 @@ model Order {
   items           OrderItem[]
   claims          Claim[]
   
-  @@map("orders")
+  @@map("Order")
 }
 
 model OrderItem {
@@ -89,7 +89,7 @@ model OrderItem {
   quantity  Int
   price     Float    // Price at time of order
   
-  @@map("order_items")
+  @@map("OrderItem")
 }
 
 model Admin {
@@ -101,7 +101,7 @@ model Admin {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   
-  @@map("admins")
+  @@map("Admin")
 }
 
 model Claim {
@@ -116,5 +116,5 @@ model Claim {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
-  @@map("claims")
+  @@map("Claim")
 }
