@@ -9,7 +9,7 @@ console.log('🔍 Vérification de la configuration d\'authentification...\n');
 
 const requiredEnvVars = {
   NEXTAUTH_URL: {
-    expected: 'https://jaayndouguou.app',
+    expected: 'https://jaayndougou.app',
     description: 'URL de production avec HTTPS (sans www)',
   },
   NEXTAUTH_SECRET: {
@@ -109,7 +109,7 @@ try {
     { pattern: /useSecureCookies/, name: 'useSecureCookies' },
     { pattern: /sameSite:\s*['"]lax['"]/, name: 'sameSite: lax' },
     { pattern: /secure:\s*.*production/, name: 'secure conditionnel' },
-    { pattern: /domain:.*jaayndouguou\.app/, name: 'domain: .jaayndouguou.app' },
+    { pattern: /domain:.*jaayndougou\.app/, name: 'domain: .jaayndougou.app' },
   ];
 
   for (const check of checks) {
@@ -133,7 +133,7 @@ try {
   
   if (vercelConfig.redirects && vercelConfig.redirects.length > 0) {
     const wwwRedirect = vercelConfig.redirects.find(r => 
-      r.has && r.has.some(h => h.value && h.value.includes('www.jaayndouguou.app'))
+      r.has && r.has.some(h => h.value && h.value.includes('www.jaayndougou.app'))
     );
     if (wwwRedirect) {
       console.log('   ✅ Redirection www → non-www configurée');

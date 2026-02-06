@@ -21,7 +21,7 @@ export default function Checkout() {
     notes: ""
   });
 
-  const [paymentMethod, setPaymentMethod] = useState("cod"); // cod, wave, om
+  const [paymentMethod, setPaymentMethod] = useState("cod"); // cod, wave, orange-money
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -33,17 +33,18 @@ export default function Checkout() {
     setIsProcessing(true);
 
     try {
+      const cleanPhone = formData.phone.replace(/\s+/g, '');
       const orderData = {
         customerInfo: {
           firstName: formData.firstName,
           lastName: formData.lastName,
-          email: `${formData.phone}@jaayndougou.sn`, // Temporary email using phone if no email field
-          phone: formData.phone,
+          email: `${cleanPhone}@jaayndougou.sn`, // Temporary email using cleaned phone
+          phone: cleanPhone,
         },
         deliveryInfo: {
           address: formData.address,
           city: formData.city,
-          phone: formData.phone,
+          phone: cleanPhone,
           notes: formData.notes
         },
         items: items.map(item => ({
@@ -281,19 +282,19 @@ export default function Checkout() {
                     )}
                   </label>
 
-                  <label className={`block p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'om' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-200'}`}>
+                  <label className={`block p-4 border-2 rounded-xl cursor-pointer transition-all ${paymentMethod === 'orange-money' ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-200'}`}>
                     <div className="flex items-center mb-2">
                       <input
                         type="radio"
                         name="paymentMethod"
-                        value="om"
-                        checked={paymentMethod === "om"}
-                        onChange={() => setPaymentMethod("om")}
+                        value="orange-money"
+                        checked={paymentMethod === "orange-money"}
+                        onChange={() => setPaymentMethod("orange-money")}
                         className="h-5 w-5 text-orange-600 focus:ring-orange-500 border-gray-300"
                       />
                       <span className="ml-3 font-bold text-gray-900">Orange Money</span>
                     </div>
-                    {paymentMethod === 'om' && (
+                    {paymentMethod === 'orange-money' && (
                       <div className="ml-8 text-sm text-orange-800 bg-white p-3 rounded-lg border border-orange-100">
                         <p className="font-semibold mb-1">Envoyez le montant au :</p>
                         <p className="text-lg font-bold">78 603 79 13</p>

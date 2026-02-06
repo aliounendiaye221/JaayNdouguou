@@ -11,24 +11,44 @@ import {
 export default function DashboardPage() {
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    const loadData = async (isPoll = false) => {
+        if (!isPoll) setIsRefreshing(true);
+        try {
+            const res = await fetch('/api/admin/stats');
+            const statsData = await res.json();
+            
+            if (!statsData || statsData.error) {
+                console.error("Erreur lors du chargement des statistiques");
+                if (!data) {
+                    setData({ stats: { totalOrders: 0, ordersToday: 0, totalRevenue: 0, pendingClaims: 0 }, recentOrders: [] });
+                }
+            } else {
+                setData(statsData);
+                setLastRefresh(new Date());
+            }
+        } catch (err) {
+            console.error(err);
+            if (!data) {
+                setData({ stats: { totalOrders: 0, ordersToday: 0, totalRevenue: 0, pendingClaims: 0 }, recentOrders: [] });
+            }
+        } finally {
+            setLoading(false);
+            setIsRefreshing(false);
+        }
+    };
 
     useEffect(() => {
-        fetch('/api/admin/stats')
-            .then(res => res.json())
-            .then(statsData => {
-                if (!statsData || statsData.error) {
-                    console.error("Erreur lors du chargement des statistiques");
-                    setData({ stats: { totalOrders: 0, ordersToday: 0, totalRevenue: 0, pendingClaims: 0 }, recentOrders: [] });
-                } else {
-                    setData(statsData);
-                }
-                setLoading(false);
-            })
-            .catch(err => {
-                console.error(err);
-                setData({ stats: { totalOrders: 0, ordersToday: 0, totalRevenue: 0, pendingClaims: 0 }, recentOrders: [] });
-                setLoading(false);
-            });
+        loadData();
+
+        // Polling toutes les 30 secondes pour le temps réel
+        const interval = setInterval(() => {
+            loadData(true);
+        }, 30000);
+
+        return () => clearInterval(interval);
     }, []);
 
     if (loading) {
@@ -50,10 +70,25 @@ export default function DashboardPage() {
             {/* Top Bar / Quick Actions */}
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight">Vue d'ensemble</h1>
-                    <p className="text-slate-500 font-medium mt-1">Bon retour, voici l'état de votre marché aujourd'hui.</p>
+                    <div className="flex items-center gap-3">
+                        <h1 className="text-3xl font-black text-slate-900 tracking-tight">Vue d'ensemble</h1>
+                        {isRefreshing && (
+                            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-ping" />
+                        )}
+                    </div>
+                    <p className="text-slate-500 font-medium mt-1">
+                        Dernière mise à jour : {lastRefresh.toLocaleTimeString('fr-SN')}
+                    </p>
                 </div>
                 <div className="flex items-center gap-3">
+                    <button 
+                        onClick={() => loadData()}
+                        disabled={isRefreshing}
+                        className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 px-4 py-2.5 rounded-2xl font-bold shadow-sm hover:bg-slate-50 transition-all disabled:opacity-50"
+                    >
+                        <Activity className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+                        <span>Actualiser</span>
+                    </button>
                     <div className="hidden sm:flex items-center bg-white border border-slate-200 rounded-2xl px-4 py-2.5 shadow-sm text-sm font-bold text-slate-600 gap-2">
                         <Calendar className="w-4 h-4 text-emerald-600" />
                         <span>{new Date().toLocaleDateString('fr-SN', { weekday: 'long', day: 'numeric', month: 'long' })}</span>

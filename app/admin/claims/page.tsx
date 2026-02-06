@@ -16,7 +16,7 @@ export default function ClaimsPage() {
     const [claims, setClaims] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
+    const fetchClaims = () => {
         fetch('/api/admin/claims')
             .then(res => {
                 if (!res.ok) {
@@ -40,6 +40,17 @@ export default function ClaimsPage() {
                 setClaims([]);
                 setLoading(false);
             });
+    };
+
+    useEffect(() => {
+        fetchClaims();
+
+        // Rafraîchissement automatique toutes les 15 secondes
+        const interval = setInterval(() => {
+            fetchClaims();
+        }, 15000);
+
+        return () => clearInterval(interval);
     }, []);
 
     return (

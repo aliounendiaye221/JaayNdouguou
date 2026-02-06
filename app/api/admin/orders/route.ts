@@ -1,16 +1,27 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/app/utils/prisma';
+import { prisma, getDbInfo } from '@/app/utils/prisma';
 import { auth } from '@/auth';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0; // Désactiver complètement le cache
 
 export async function GET(request: Request) {
+    const requestId = `REQ-${Date.now().toString(36)}`;
+    console.log(`📥 [ADMIN/ORDERS] ${requestId} - Nouvelle requête GET`);
+    
     const session = await auth();
     if (!session) {
+        console.log(`❌ [ADMIN/ORDERS] ${requestId} - Non authentifié`);
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    
+    console.log(`✅ [ADMIN/ORDERS] ${requestId} - Authentifié: ${session.user?.email}`);
 
     try {
+        // Log de traçabilité DB
+        const dbInfo = getDbInfo();
+        console.log(`🔌 [ADMIN/ORDERS] ${requestId} - DB: ${dbInfo.main?.host} (${dbInfo.vercelEnv})`);
+        
         const { searchParams } = new URL(request.url);
         const page = parseInt(searchParams.get('page') || '1');
         const limit = parseInt(searchParams.get('limit') || '50');
@@ -67,10 +78,9 @@ export async function GET(request: Request) {
             prisma.order.count({ where })
         ]);
         
-        console.log('📊 Nombre de commandes trouvées:', orders.length);
-        console.log('📈 Total de commandes:', totalCount);
+        console.log(`📊 [ADMIN/ORDERS] ${requestId} - Commandes trouvées: ${orders.length}/${totalCount}`);
         
-        return NextResponse.json({
+        const response = NextResponse.json({
             orders,
             pagination: {
                 page,
@@ -80,6 +90,13 @@ export async function GET(request: Request) {
                 hasMore: skip + orders.length < totalCount
             }
         });
+
+        // Add headers to prevent caching
+        response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        response.headers.set('Pragma', 'no-cache');
+        response.headers.set('Expires', '0');
+
+        return response;
     } catch (error) {
         console.error('Failed to fetch orders:', error);
         return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });

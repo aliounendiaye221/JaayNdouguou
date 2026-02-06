@@ -25,7 +25,7 @@ Le message "identifiant invalide" sur mobile est causé par :
    ```bash
    # Variable 1
    Name: NEXTAUTH_URL
-   Value: https://jaayndouguou.app
+   Value: https://jaayndougou.app
    Environments: ✅ Production ✅ Preview ✅ Development
    
    # Variable 2  
@@ -63,7 +63,7 @@ Assurez-vous que ces variables existent aussi :
 
 ```bash
 DATABASE_URL = postgresql://... (votre URL Neon)
-NEXT_PUBLIC_SITE_URL = https://jaayndouguou.app
+NEXT_PUBLIC_SITE_URL = https://jaayndougou.app
 NEXT_PUBLIC_SITE_NAME = JaayNdougou
 ```
 
@@ -85,7 +85,7 @@ NEXT_PUBLIC_SITE_NAME = JaayNdougou
 2. Avancé → Données de sites web
 3. Supprimer toutes les données
 4. OU : Réglages → Safari → Effacer historique et données
-5. Testez : https://jaayndouguou.app/login
+5. Testez : https://jaayndougou.app/login
 ```
 
 #### Android (Chrome)
@@ -95,7 +95,7 @@ NEXT_PUBLIC_SITE_NAME = JaayNdougou
 3. Effacer les données de navigation
 4. Cochez "Cookies" et "Images en cache"
 5. Effacer les données
-6. Testez : https://jaayndouguou.app/login
+6. Testez : https://jaayndougou.app/login
 ```
 
 ---
@@ -114,7 +114,7 @@ cat .env.vercel | grep NEXTAUTH
 
 Vous devriez voir :
 ```
-NEXTAUTH_URL="https://jaayndouguou.app"
+NEXTAUTH_URL="https://jaayndougou.app"
 NEXTAUTH_SECRET="[votre_secret]"
 ```
 
@@ -122,7 +122,7 @@ NEXTAUTH_SECRET="[votre_secret]"
 
 ```bash
 # Dans votre navigateur ou terminal
-curl -I https://jaayndouguou.app/api/auth/session
+curl -I https://jaayndougou.app/api/auth/session
 ```
 
 Réponse attendue : `200 OK` ou `401 Unauthorized` (normal si non connecté)
@@ -131,7 +131,7 @@ Réponse attendue : `200 OK` ou `401 Unauthorized` (normal si non connecté)
 
 **Sur PC** :
 1. Ouvrez DevTools (F12)
-2. Application → Cookies → https://jaayndouguou.app
+2. Application → Cookies → https://jaayndougou.app
 3. Après connexion, vous devriez voir : `__Secure-next-auth.session-token`
 
 **Sur Mobile** :
@@ -165,10 +165,10 @@ Si ça fonctionne en privé mais pas en normal → **Problème de cache/cookies*
 
 ```bash
 # Vérifiez que le domaine pointe vers Vercel
-nslookup jaayndouguou.app
+nslookup jaayndougou.app
 
 # Ou
-ping jaayndouguou.app
+ping jaayndougou.app
 ```
 
 Devrait pointer vers une IP Vercel (76.76.21.21 ou similaire)
@@ -189,7 +189,7 @@ vercel --prod --force
 
 Cochez au fur et à mesure :
 
-- [ ] ✅ NEXTAUTH_URL = `https://jaayndouguou.app` (sans www, sans slash)
+- [ ] ✅ NEXTAUTH_URL = `https://jaayndougou.app` (sans www, sans slash)
 - [ ] ✅ NEXTAUTH_SECRET = [secret de 32+ caractères]
 - [ ] ✅ Variables appliquées à Production ET Preview
 - [ ] ✅ Redéploiement lancé sur Vercel
@@ -205,16 +205,16 @@ Cochez au fur et à mesure :
 
 ## 📝 VALEURS EXACTES À UTILISER
 
-### Pour jaayndouguou.app
+### Pour jaayndougou.app
 
 ```bash
 # Production (Vercel)
-NEXTAUTH_URL=https://jaayndouguou.app
+NEXTAUTH_URL=https://jaayndougou.app
 
 # PAS d'autres variantes :
-❌ http://jaayndouguou.app (pas de http)
-❌ https://www.jaayndouguou.app (pas de www)
-❌ https://jaayndouguou.app/ (pas de slash final)
+❌ http://jaayndougou.app (pas de http)
+❌ https://www.jaayndougou.app (pas de www)
+❌ https://jaayndougou.app/ (pas de slash final)
 ❌ http://localhost:3000 (pas en production!)
 ```
 
@@ -294,3 +294,4 @@ Après ces étapes :
 **Dernière mise à jour** : 5 février 2026  
 **Version** : 2.0 - Configuration corrigée sans domaine explicite  
 **Status** : Prêt à déployer
+

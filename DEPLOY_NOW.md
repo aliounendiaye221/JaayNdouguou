@@ -49,7 +49,7 @@ Dans le terminal qui vient de s'ouvrir, suivez les prompts:
 1. "Set up and deploy ~/JaayNdougou?" → YES (Entrée)
 2. "Which scope?" → lune221's projects (Entrée)
 3. "Link to existing project?" → NO (Entrée)
-4. "What's your project's name?" → jaayndouguou (ou votre choix)
+4. "What's your project's name?" → jaayndougou (ou votre choix)
 5. "In which directory is your code located?" → ./ (Entrée)
 6. Auto-detected Next.js → YES (Entrée)
 ```
@@ -59,7 +59,7 @@ Le déploiement commencera automatiquement !
 ### Option 2: Via Dashboard Vercel
 
 1. Allez sur https://vercel.com/new
-2. Importez: `aliounendiaye221/JaayNdouguou`
+2. Importez: `aliounendiaye221/jaayndougou`
 3. Configurez le projet (voir ci-dessous)
 4. Cliquez "Deploy"
 
@@ -111,8 +111,8 @@ vercel exec node scripts/setup-admin.js
 ## 📱 Accès après Déploiement
 
 Votre site sera accessible à:
-- **URL Vercel:** https://jaayndouguou.vercel.app (ou le nom choisi)
-- **Login Admin:** https://jaayndouguou.vercel.app/login
+- **URL Vercel:** https://jaayndougou.vercel.app (ou le nom choisi)
+- **Login Admin:** https://jaayndougou.vercel.app/login
 
 **Identifiants:** Ceux configurés dans les variables d'environnement
 
@@ -227,4 +227,5 @@ Votre site e-commerce JaayNdougou est maintenant:
 **Besoin d'aide ?**
 - Documentation: DEPLOYMENT_GUIDE.md
 - Support Vercel: https://vercel.com/support
-- GitHub Issues: https://github.com/aliounendiaye221/JaayNdouguou/issues
+- GitHub Issues: https://github.com/aliounendiaye221/jaayndougou/issues
+

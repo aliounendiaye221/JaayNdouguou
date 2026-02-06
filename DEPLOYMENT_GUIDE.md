@@ -57,7 +57,7 @@ vercel --prod
 
 1. Aller sur https://vercel.com
 2. Cliquer "Add New Project"
-3. Importer le dépôt GitHub: `aliounendiaye221/JaayNdouguou`
+3. Importer le dépôt GitHub: `aliounendiaye221/jaayndougou`
 4. Configurer les variables d'environnement (voir ci-dessous)
 
 ### Étape 3: Configurer la Base de Données
@@ -224,3 +224,4 @@ vercel exec node scripts/setup-admin.js
 ---
 
 **✨ Votre site est maintenant sécurisé et prêt pour la production !**
+

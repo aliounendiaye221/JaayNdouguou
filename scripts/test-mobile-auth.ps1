@@ -8,7 +8,7 @@ Write-Host ""
 # Test 1: Vérifier que le domaine est accessible
 Write-Host "1️⃣ Test de connectivité HTTPS..." -ForegroundColor Yellow
 try {
-    $response = Invoke-WebRequest -Uri "https://jaayndouguou.app" -Method Head -UseBasicParsing
+    $response = Invoke-WebRequest -Uri "https://jaayndougou.app" -Method Head -UseBasicParsing
     if ($response.StatusCode -eq 200) {
         Write-Host "   ✅ Site accessible (Status: $($response.StatusCode))" -ForegroundColor Green
     } else {
@@ -24,10 +24,10 @@ Write-Host ""
 # Test 2: Vérifier la redirection www
 Write-Host "2️⃣ Test de redirection www..." -ForegroundColor Yellow
 try {
-    $response = Invoke-WebRequest -Uri "https://www.jaayndouguou.app" -Method Head -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
+    $response = Invoke-WebRequest -Uri "https://www.jaayndougou.app" -Method Head -UseBasicParsing -MaximumRedirection 0 -ErrorAction SilentlyContinue
     if ($response.StatusCode -eq 308 -or $response.StatusCode -eq 301) {
         $location = $response.Headers.Location
-        if ($location -eq "https://jaayndouguou.app/" -or $location -eq "https://jaayndouguou.app") {
+        if ($location -eq "https://jaayndougou.app/" -or $location -eq "https://jaayndougou.app") {
             Write-Host "   ✅ Redirection www → non-www OK" -ForegroundColor Green
         } else {
             Write-Host "   ⚠️  Redirige vers: $location" -ForegroundColor Yellow
@@ -44,7 +44,7 @@ Write-Host ""
 # Test 3: Vérifier SSL/TLS
 Write-Host "3️⃣ Test SSL/TLS..." -ForegroundColor Yellow
 try {
-    $response = Invoke-WebRequest -Uri "https://jaayndouguou.app" -Method Head -UseBasicParsing
+    $response = Invoke-WebRequest -Uri "https://jaayndougou.app" -Method Head -UseBasicParsing
     Write-Host "   ✅ Certificat SSL valide" -ForegroundColor Green
 } catch {
     Write-Host "   ❌ Erreur SSL: $($_.Exception.Message)" -ForegroundColor Red
@@ -55,7 +55,7 @@ Write-Host ""
 # Test 4: Vérifier les headers de sécurité
 Write-Host "4️⃣ Test des headers de sécurité..." -ForegroundColor Yellow
 try {
-    $response = Invoke-WebRequest -Uri "https://jaayndouguou.app" -Method Head -UseBasicParsing
+    $response = Invoke-WebRequest -Uri "https://jaayndougou.app" -Method Head -UseBasicParsing
     $headers = $response.Headers
     
     $securityHeaders = @{
@@ -81,7 +81,7 @@ Write-Host ""
 # Test 5: Vérifier que la page login est accessible
 Write-Host "5️⃣ Test de la page de login..." -ForegroundColor Yellow
 try {
-    $response = Invoke-WebRequest -Uri "https://jaayndouguou.app/login" -UseBasicParsing
+    $response = Invoke-WebRequest -Uri "https://jaayndougou.app/login" -UseBasicParsing
     if ($response.StatusCode -eq 200) {
         Write-Host "   ✅ Page /login accessible" -ForegroundColor Green
         
@@ -110,7 +110,7 @@ if (Test-Path $authFile) {
         @{Pattern = "useSecureCookies"; Name = "useSecureCookies"},
         @{Pattern = "sameSite:\s*'lax'"; Name = "sameSite: 'lax'"},
         @{Pattern = "secure:.*production"; Name = "secure conditionnel"},
-        @{Pattern = "\.jaayndouguou\.app"; Name = "domain: .jaayndouguou.app"}
+        @{Pattern = "\.jaayndougou\.app"; Name = "domain: .jaayndougou.app"}
     )
     
     foreach ($check in $checks) {

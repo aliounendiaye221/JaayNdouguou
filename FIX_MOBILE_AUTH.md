@@ -15,19 +15,19 @@ Ajoutez/modifiez ces variables :
 
 ```bash
 # CRITIQUE : URL de production avec HTTPS
-NEXTAUTH_URL=https://jaayndouguou.app
+NEXTAUTH_URL=https://jaayndougou.app
 
 # Secret NextAuth (générez-en un nouveau si nécessaire)
 NEXTAUTH_SECRET=votre_secret_actuel_ici
 
 # Autres variables (gardez vos valeurs actuelles)
 DATABASE_URL=postgresql://...
-NEXT_PUBLIC_SITE_URL=https://jaayndouguou.app
+NEXT_PUBLIC_SITE_URL=https://jaayndougou.app
 NEXT_PUBLIC_SITE_NAME=JaayNdougou
 ```
 
 ### ⚠️ IMPORTANT
-- `NEXTAUTH_URL` doit être **exactement** `https://jaayndouguou.app` (sans www, avec https)
+- `NEXTAUTH_URL` doit être **exactement** `https://jaayndougou.app` (sans www, avec https)
 - Redéployez immédiatement après avoir modifié les variables
 
 ---
@@ -36,7 +36,7 @@ NEXT_PUBLIC_SITE_NAME=JaayNdougou
 
 ### A. Vérifiez vos enregistrements DNS actuels
 
-Connectez-vous à **name.com** → **My Domains** → **jaayndouguou.app** → **Manage DNS**
+Connectez-vous à **name.com** → **My Domains** → **jaayndougou.app** → **Manage DNS**
 
 ### B. Configuration recommandée
 
@@ -56,15 +56,15 @@ TTL: 300
 # Redirection www → non-www (géré par Vercel)
 Type: CNAME
 Host: www
-Value: jaayndouguou.app
+Value: jaayndougou.app
 TTL: 300
 ```
 
 ### C. Dans Vercel
 
 **Vercel Dashboard** → **Domains** → Assurez-vous que :
-- ✅ `jaayndouguou.app` est le domaine principal
-- ✅ `www.jaayndouguou.app` redirige vers `jaayndouguou.app`
+- ✅ `jaayndougou.app` est le domaine principal
+- ✅ `www.jaayndougou.app` redirige vers `jaayndougou.app`
 - ✅ SSL/TLS est actif (automatique pour .app)
 
 ---
@@ -111,7 +111,7 @@ vercel --prod
 ### B. Test de connexion
 
 1. Ouvrez **Safari/Chrome** sur mobile
-2. Allez sur `https://jaayndouguou.app/login`
+2. Allez sur `https://jaayndougou.app/login`
 3. Entrez vos identifiants admin
 4. ✅ Connexion devrait fonctionner
 
@@ -135,7 +135,7 @@ cookies: {
       httpOnly: true,           // Protection XSS
       sameSite: 'lax',          // Compatible mobile
       secure: true,             // HTTPS uniquement
-      domain: '.jaayndouguou.app', // Fonctionne sur tous sous-domaines
+      domain: '.jaayndougou.app', // Fonctionne sur tous sous-domaines
     }
   }
 }
@@ -145,8 +145,8 @@ cookies: {
 ```json
 "redirects": [{
   "source": "/:path*",
-  "has": [{"type": "host", "value": "www.jaayndouguou.app"}],
-  "destination": "https://jaayndouguou.app/:path*",
+  "has": [{"type": "host", "value": "www.jaayndougou.app"}],
+  "destination": "https://jaayndougou.app/:path*",
   "permanent": true
 }]
 ```
@@ -165,7 +165,7 @@ Permet à NextAuth de fonctionner derrière un proxy (Vercel)
 # Dans le terminal Vercel CLI
 vercel env ls
 ```
-Assurez-vous que `NEXTAUTH_URL=https://jaayndouguou.app`
+Assurez-vous que `NEXTAUTH_URL=https://jaayndougou.app`
 
 **Solution 2** : Forcez un nouveau déploiement
 ```bash
@@ -181,7 +181,7 @@ Recherchez les erreurs liées à NextAuth
 ### Problème : Cookies non définis
 
 Vérifiez que :
-- ✅ Le domaine est bien `jaayndouguou.app` (pas de www)
+- ✅ Le domaine est bien `jaayndougou.app` (pas de www)
 - ✅ HTTPS est actif (obligatoire pour .app)
 - ✅ `NEXTAUTH_SECRET` est défini dans Vercel
 - ✅ Le cache mobile est vidé
@@ -201,7 +201,7 @@ Avant de marquer comme résolu, vérifiez :
 
 - [ ] Variables Vercel configurées (NEXTAUTH_URL, NEXTAUTH_SECRET)
 - [ ] Code déployé sur production
-- [ ] DNS pointe vers Vercel (vérifiez avec `nslookup jaayndouguou.app`)
+- [ ] DNS pointe vers Vercel (vérifiez avec `nslookup jaayndougou.app`)
 - [ ] SSL actif (le cadenas s'affiche dans le navigateur)
 - [ ] Connexion admin fonctionne sur PC
 - [ ] Cache mobile vidé
@@ -228,3 +228,4 @@ Si le problème persiste après ces étapes :
 **Résultat** : Admin accessible sur tous appareils (PC, iOS, Android)
 
 **Temps estimé** : 5-10 minutes (configuration + déploiement)
+

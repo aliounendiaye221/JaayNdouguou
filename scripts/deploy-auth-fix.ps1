@@ -36,7 +36,7 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "`n✅ Déploiement réussi!" -ForegroundColor Green
     Write-Host "`n📋 PROCHAINES ÉTAPES:" -ForegroundColor Cyan
     Write-Host "1. Allez sur https://vercel.com/dashboard" -ForegroundColor White
-    Write-Host "2. Configurez NEXTAUTH_URL = https://jaayndouguou.app" -ForegroundColor White
+    Write-Host "2. Configurez NEXTAUTH_URL = https://jaayndougou.app" -ForegroundColor White
     Write-Host "3. Générez un nouveau NEXTAUTH_SECRET" -ForegroundColor White
     Write-Host "4. Redéployez sur Vercel" -ForegroundColor White
     Write-Host "5. Videz le cache mobile et testez" -ForegroundColor White

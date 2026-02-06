@@ -18,7 +18,14 @@ export async function GET() {
                 order: true
             }
         });
-        return NextResponse.json(claims);
+        const response = NextResponse.json(claims);
+        
+        // Add headers to prevent caching
+        response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+        response.headers.set('Pragma', 'no-cache');
+        response.headers.set('Expires', '0');
+
+        return response;
     } catch {
         return NextResponse.json({ error: 'Failed to fetch claims' }, { status: 500 });
     }

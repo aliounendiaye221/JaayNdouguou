@@ -9,10 +9,10 @@
       "has": [
         {
           "type": "host",
-          "value": "www.jaayndouguou.app"
+          "value": "www.jaayndougou.app"
         }
       ],
-      "destination": "https://jaayndouguou.app/:path*",
+      "destination": "https://jaayndougou.app/:path*",
       "permanent": true
     }
   ],

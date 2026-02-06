@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/app/utils/prisma';
+import { prisma, getDbInfo } from '@/app/utils/prisma';
 import { sendOrderConfirmationEmail } from '@/app/utils/email';
 import {
     initiateWavePayment,
@@ -7,6 +7,31 @@ import {
 } from '@/app/utils/payment';
 import { z } from 'zod';
 import { auth } from '@/auth';
+
+// Force pas de cache pour les commandes
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
+// Fonction utilitaire pour retry avec backoff exponentiel
+async function retryOperation<T>(
+    operation: () => Promise<T>,
+    maxRetries: number = 3,
+    delayMs: number = 1000
+): Promise<T> {
+    let lastError: Error | null = null;
+    for (let i = 0; i < maxRetries; i++) {
+        try {
+            return await operation();
+        } catch (error) {
+            console.error(`Tentative ${i + 1}/${maxRetries} échouée:`, error);
+            lastError = error as Error;
+            if (i < maxRetries - 1) {
+                await new Promise(resolve => setTimeout(resolve, delayMs * Math.pow(2, i)));
+            }
+        }
+    }
+    throw lastError;
+}
 
 // Validation schema
 const orderSchema = z.object({
@@ -35,6 +60,13 @@ const orderSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+    const requestId = `ORD-${Date.now().toString(36)}`;
+    
+    // Log de traçabilité DB au début de chaque requête
+    const dbInfo = getDbInfo();
+    console.log(`📥 [PUBLIC/ORDERS] ${requestId} - Nouvelle commande`);
+    console.log(`🔌 [PUBLIC/ORDERS] ${requestId} - DB: ${dbInfo.main?.host} (${dbInfo.vercelEnv})`);
+    
     try {
         const body = await request.json();
 
@@ -113,67 +145,76 @@ export async function POST(request: NextRequest) {
             paymentStatus = 'pending';
         }
 
-        // Try to save to database, but fallback to simulation if it fails (e.g. on Vercel without Postgres)
+        // Sauvegarder en base de données avec retry automatique
         let order;
+        let dbError = null;
+        
         try {
-            // Create or find customer
-            let customer = await prisma.customer.findUnique({
-                where: { email: customerInfo.email },
-            });
+            order = await retryOperation(async () => {
+                // Create or find customer
+                let customer = await prisma.customer.findUnique({
+                    where: { email: customerInfo.email },
+                });
 
-            if (!customer) {
-                customer = await prisma.customer.create({
+                if (!customer) {
+                    customer = await prisma.customer.create({
+                        data: {
+                            firstName: customerInfo.firstName,
+                            lastName: customerInfo.lastName,
+                            email: customerInfo.email,
+                            phone: customerInfo.phone,
+                            address: deliveryInfo.address,
+                            city: deliveryInfo.city,
+                        },
+                    });
+                }
+
+                const newOrder = await prisma.order.create({
                     data: {
-                        firstName: customerInfo.firstName,
-                        lastName: customerInfo.lastName,
-                        email: customerInfo.email,
-                        phone: customerInfo.phone,
-                        address: deliveryInfo.address,
-                        city: deliveryInfo.city,
+                        orderNumber,
+                        customerId: customer.id,
+                        deliveryAddress: deliveryInfo.address,
+                        deliveryCity: deliveryInfo.city,
+                        deliveryPhone: deliveryInfo.phone,
+                        deliveryNotes: deliveryInfo.notes || '',
+                        paymentMethod,
+                        paymentStatus,
+                        paymentId,
+                        subtotal,
+                        deliveryFee,
+                        total,
+                        items: {
+                            create: items.map((item) => ({
+                                productId: item.productId,
+                                quantity: item.quantity,
+                                price: item.price,
+                            })),
+                        },
+                    },
+                    include: {
+                        items: true,
                     },
                 });
-            }
-
-            order = await prisma.order.create({
-                data: {
-                    orderNumber,
-                    customerId: customer.id,
-                    deliveryAddress: deliveryInfo.address,
-                    deliveryCity: deliveryInfo.city,
-                    deliveryPhone: deliveryInfo.phone,
-                    deliveryNotes: deliveryInfo.notes || '',
-                    paymentMethod,
-                    paymentStatus,
-                    paymentId,
-                    subtotal,
-                    deliveryFee,
-                    total,
-                    items: {
-                        create: items.map((item) => ({
-                            productId: item.productId,
-                            quantity: item.quantity,
-                            price: item.price,
-                        })),
-                    },
-                },
-                include: {
-                    items: true,
-                },
-            });
-        } catch (dbError) {
-            console.warn("Database operation failed, falling back to simulation mode:", dbError);
-            // Mock order object for response
-            order = {
-                id: 'simulated-id',
+                
+                return newOrder;
+            }, 3, 1000); // 3 tentatives avec délai exponentiel
+            
+            console.log(`✅ [PUBLIC/ORDERS] ${requestId} - Commande ${orderNumber} enregistrée avec succès`);
+            console.log(`📊 [PUBLIC/ORDERS] ${requestId} - DB: ${dbInfo.main?.host} | Total: ${total} FCFA`);
+            
+        } catch (error) {
+            console.error(`❌ [PUBLIC/ORDERS] ${requestId} - ERREUR CRITIQUE:`, error);
+            dbError = error;
+            
+            // En cas d'échec critique, on retourne une erreur 500
+            return NextResponse.json({
+                error: 'Impossible d\'enregistrer la commande',
+                details: 'Le serveur rencontre des difficultés. Veuillez réessayer dans quelques instants.',
                 orderNumber,
-                total,
-                status: 'pending',
-                paymentStatus,
-                items: items
-            };
+            }, { status: 500 });
         }
 
-        // Send confirmation email
+        // Envoyer l'email de confirmation (ne pas bloquer si ça échoue)
         try {
             await sendOrderConfirmationEmail(customerInfo.email, {
                 customerName: `${customerInfo.firstName} ${customerInfo.lastName}`,
@@ -186,19 +227,22 @@ export async function POST(request: NextRequest) {
                 paymentMethod,
             });
         } catch (emailError) {
-            console.error('Failed to send confirmation email:', emailError);
+            console.warn('⚠️ L\'email de confirmation n\'a pas pu être envoyé:', emailError);
+            // On continue quand même, l'email n'est pas critique
         }
 
+        // Retourne la réponse de succès seulement si la commande est bien enregistrée
         return NextResponse.json({
             success: true,
             order: {
-                id: order.id || 'simulated',
+                id: order.id,
                 orderNumber: orderNumber,
                 total: total,
-                status: order.status || 'pending',
-                paymentStatus: order.paymentStatus || paymentStatus,
-                warning: !order.id ? "Order processed in DEMO mode (not saved to DB)" : undefined
+                status: order.status,
+                paymentStatus: order.paymentStatus,
+                createdAt: order.createdAt,
             },
+            message: 'Commande enregistrée avec succès ✅'
         });
     } catch (error) {
         console.error('Error creating order:', error);

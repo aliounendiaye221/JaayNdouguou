@@ -5,5 +5,8 @@ export default NextAuth(authConfig).auth;
 
 export const config = {
     // https://nextjs.org/docs/app/building-your-application/routing/middleware#matcher
-    matcher: ['/((?!api|_next/static|_next/image|.*\\.png$).*)'],
+    // Exclure les routes API publiques pour éviter les problèmes de CORS/Auth
+    matcher: [
+        '/((?!api/orders|api/contact|api/auth|_next/static|_next/image|favicon.ico|.*\\.png$|.*\\.jpg$|.*\\.jpeg$|.*\\.svg$|.*\\.ico$).*)',
+    ],
 };

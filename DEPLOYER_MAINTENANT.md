@@ -18,7 +18,7 @@ git add scripts/test-mobile-auth.ps1
 git add DEPLOYER_MAINTENANT.md
 
 # Commitez les changements
-git commit -m "fix(auth): Configuration cookies HTTPS sécurisés pour mobile - SameSite lax, Secure, Domain .jaayndouguou.app"
+git commit -m "fix(auth): Configuration cookies HTTPS sécurisés pour mobile - SameSite lax, Secure, Domain .jaayndougou.app"
 
 # Poussez vers GitHub
 git push origin main
@@ -40,12 +40,12 @@ git push origin main
 
    ```
    Variable: NEXTAUTH_URL
-   Value: https://jaayndouguou.app
+   Value: https://jaayndougou.app
    Environments: Production, Preview
    ```
 
    ⚠️ **ATTENTION** :
-   - ✅ Utilisez `https://jaayndouguou.app` (SANS www)
+   - ✅ Utilisez `https://jaayndougou.app` (SANS www)
    - ❌ PAS `http://localhost:3000`
    - ❌ PAS de slash `/` à la fin
    - ❌ PAS de `www.`
@@ -86,7 +86,7 @@ Status devrait être : ✅ **Ready**
 
 2. **Testez** :
    - Ouvrez Safari
-   - Allez sur `https://jaayndouguou.app/login`
+   - Allez sur `https://jaayndougou.app/login`
    - Connectez-vous avec vos identifiants admin
    - ✅ **DEVRAIT FONCTIONNER !**
 
@@ -100,7 +100,7 @@ Status devrait être : ✅ **Ready**
 
 2. **Testez** :
    - Ouvrez Chrome
-   - Allez sur `https://jaayndouguou.app/login`
+   - Allez sur `https://jaayndougou.app/login`
    - Connectez-vous avec vos identifiants admin
    - ✅ **DEVRAIT FONCTIONNER !**
 
@@ -111,7 +111,7 @@ Status devrait être : ✅ **Ready**
 ## 🎯 CHECKLIST COMPLÈTE
 
 - [ ] ✅ Fichiers commités et poussés vers Git
-- [ ] ✅ NEXTAUTH_URL configuré sur Vercel (`https://jaayndouguou.app`)
+- [ ] ✅ NEXTAUTH_URL configuré sur Vercel (`https://jaayndougou.app`)
 - [ ] ✅ Redéploiement lancé sur Vercel
 - [ ] ✅ Déploiement terminé (status "Ready")
 - [ ] ✅ Cache mobile vidé (iPhone)
@@ -128,7 +128,7 @@ Status devrait être : ✅ **Ready**
 
 ```powershell
 # Dans PowerShell
-Invoke-WebRequest -Uri "https://jaayndouguou.app/login" -UseBasicParsing | Select-Object StatusCode
+Invoke-WebRequest -Uri "https://jaayndougou.app/login" -UseBasicParsing | Select-Object StatusCode
 ```
 
 Résultat attendu : `StatusCode : 200`
@@ -143,7 +143,7 @@ npm install -g vercel
 vercel env ls
 ```
 
-Vous devriez voir `NEXTAUTH_URL` avec la valeur `https://jaayndouguou.app`
+Vous devriez voir `NEXTAUTH_URL` avec la valeur `https://jaayndougou.app`
 
 ---
 
@@ -209,7 +209,7 @@ cookies: {
       httpOnly: true,           // Sécurité XSS
       sameSite: 'lax',          // Compatible mobile
       secure: true,             // HTTPS obligatoire
-      domain: '.jaayndouguou.app', // Tous sous-domaines
+      domain: '.jaayndougou.app', // Tous sous-domaines
     }
   }
 }
@@ -219,8 +219,8 @@ cookies: {
 ```json
 "redirects": [{
   "source": "/:path*",
-  "has": [{"type": "host", "value": "www.jaayndouguou.app"}],
-  "destination": "https://jaayndouguou.app/:path*",
+  "has": [{"type": "host", "value": "www.jaayndougou.app"}],
+  "destination": "https://jaayndougou.app/:path*",
   "permanent": true
 }]
 ```
@@ -258,7 +258,7 @@ Si après toutes ces étapes le problème persiste :
 1. **Logs de déploiement Vercel** : Vérifiez les erreurs
 2. **Console navigateur mobile** : Activez les DevTools
 3. **Variables d'environnement** : Double-vérifiez NEXTAUTH_URL
-4. **DNS** : Vérifiez que jaayndouguou.app pointe vers Vercel
+4. **DNS** : Vérifiez que jaayndougou.app pointe vers Vercel
 5. **SSL** : Assurez-vous que HTTPS fonctionne (cadenas vert)
 
 ---
@@ -272,3 +272,4 @@ Si après toutes ces étapes le problème persiste :
 **Créé le** : 5 février 2026  
 **Version** : 1.0 - Correction authentification mobile  
 **Status** : Prêt à déployer
+

@@ -12,7 +12,7 @@ Allez dans **Settings** → **Environment Variables** et ajoutez/modifiez :
 
 ```bash
 # KEY                    | VALUE                          | ENVIRONMENTS
-NEXTAUTH_URL              https://jaayndouguou.app         Production, Preview
+NEXTAUTH_URL              https://jaayndougou.app         Production, Preview
 NEXTAUTH_SECRET          [votre_secret_actuel]             Production, Preview
 DATABASE_URL             [votre_url_postgresql]            Production
 ```
@@ -24,14 +24,14 @@ DATABASE_URL             [votre_url_postgresql]            Production
 Dans **Settings** → **Domains** :
 
 ```
-✅ jaayndouguou.app (Production)
-✅ www.jaayndouguou.app → Redirects to jaayndouguou.app
+✅ jaayndougou.app (Production)
+✅ www.jaayndougou.app → Redirects to jaayndougou.app
 ```
 
 Si `www` n'est pas configuré, ajoutez-le :
 1. Cliquez sur **"Add"**
-2. Entrez `www.jaayndouguou.app`
-3. Sélectionnez **"Redirect to jaayndouguou.app"**
+2. Entrez `www.jaayndougou.app`
+3. Sélectionnez **"Redirect to jaayndougou.app"**
 
 ---
 
@@ -95,7 +95,7 @@ vercel --prod
 
 ```powershell
 # Vérifiez que le site est en ligne
-curl -I https://jaayndouguou.app
+curl -I https://jaayndougou.app
 
 # Devrait retourner :
 # HTTP/2 200
@@ -113,7 +113,7 @@ curl -I https://jaayndouguou.app
    
 2. **Testez la connexion** :
    - Ouvrez Safari
-   - Allez sur `https://jaayndouguou.app/login`
+   - Allez sur `https://jaayndougou.app/login`
    - Entrez vos identifiants
    - ✅ Devrait vous connecter sans erreur
 
@@ -131,7 +131,7 @@ curl -I https://jaayndouguou.app
 
 2. **Testez la connexion** :
    - Ouvrez Chrome
-   - Allez sur `https://jaayndouguou.app/login`
+   - Allez sur `https://jaayndougou.app/login`
    - Entrez vos identifiants
    - ✅ Devrait vous connecter sans erreur
 
@@ -161,7 +161,7 @@ Si vous voyez des erreurs, corrigez-les avant de déployer.
 ```powershell
 # Sur Vercel Dashboard
 # Settings → Environment Variables
-# Ajoutez : NEXTAUTH_URL = https://jaayndouguou.app
+# Ajoutez : NEXTAUTH_URL = https://jaayndougou.app
 # Puis : Deployments → Latest → Redeploy
 ```
 
@@ -199,8 +199,8 @@ Cochez au fur et à mesure :
 
 - [ ] Push Git effectué / Déploiement Vercel lancé
 - [ ] Status "Ready" sur Vercel Dashboard
-- [ ] Site accessible sur `https://jaayndouguou.app`
-- [ ] Redirection `www` fonctionne (teste `www.jaayndouguou.app`)
+- [ ] Site accessible sur `https://jaayndougou.app`
+- [ ] Redirection `www` fonctionne (teste `www.jaayndougou.app`)
 - [ ] Connexion admin OK sur PC
 - [ ] Cache mobile vidé
 - [ ] Connexion admin OK sur iPhone
@@ -233,8 +233,9 @@ Si après toutes ces étapes le problème persiste :
 
 ## 🎯 RÉSUMÉ
 
-**Action #1** : Configurez `NEXTAUTH_URL=https://jaayndouguou.app` sur Vercel  
+**Action #1** : Configurez `NEXTAUTH_URL=https://jaayndougou.app` sur Vercel  
 **Action #2** : Déployez avec `git push` ou `vercel --prod`  
 **Action #3** : Testez sur mobile après avoir vidé le cache  
 
 **Résultat attendu** : Admin accessible sur tous appareils en ~5 minutes ✅
+

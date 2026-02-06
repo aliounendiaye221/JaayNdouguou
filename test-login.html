@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test de Connexion Admin - JaayNdougou</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .section {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+        .section h2 {
+            color: #667eea;
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+        .credential {
+            background: white;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #e0e0e0;
+        }
+        .credential strong {
+            color: #333;
+        }
+        .credential span {
+            color: #667eea;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            margin: 10px 5px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-align: center;
+        }
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        .button-secondary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        .steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+        .steps li {
+            counter-increment: step-counter;
+            margin: 15px 0;
+            padding-left: 40px;
+            position: relative;
+        }
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #667eea;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left-color: #ffc107;
+            border: 1px solid #ffe69c;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .warning strong {
+            color: #856404;
+        }
+        .success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 20px 0;
+            color: #155724;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            .credential {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-badge status-success">✅ Problème Résolu</div>
+        <h1>🔐 Test de Connexion Admin</h1>
+        <p class="subtitle">Vérification de l'authentification JaayNdougou</p>
+
+        <div class="success">
+            <strong>✅ Le problème d'authentification a été corrigé !</strong>
+            <p>Le mot de passe admin a été réinitialisé et les variables d'environnement ont été mises à jour sur Vercel.</p>
+        </div>
+
+        <div class="section">
+            <h2>📋 Identifiants de Connexion</h2>
+            <div class="credential">
+                <strong>📧 Email:</strong>
+                <span id="email">admin@jaayndougou.sn</span>
+            </div>
+            <div class="credential">
+                <strong>🔑 Mot de passe:</strong>
+                <span id="password">Admin@2026</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚀 Instructions de Test</h2>
+            <ol class="steps">
+                <li>Cliquez sur le bouton "Se Connecter" ci-dessous</li>
+                <li>Utilisez les identifiants affichés ci-dessus</li>
+                <li>Vérifiez que vous êtes redirigé vers le dashboard admin</li>
+                <li>Testez la navigation dans les pages admin</li>
+                <li>Vérifiez que la session persiste après rafraîchissement</li>
+            </ol>
+        </div>
+
+        <div style="text-align: center; margin: 30px 0;">
+            <a href="https://jaayndougou.app/login" class="button" target="_blank">
+                🔐 Se Connecter (Production)
+            </a>
+            <a href="https://jaay-ndougou.vercel.app/login" class="button button-secondary" target="_blank">
+                🧪 Tester (Preview)
+            </a>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ IMPORTANT - Sécurité</strong>
+            <p>Après avoir vérifié que la connexion fonctionne, changez immédiatement le mot de passe par défaut dans les paramètres de votre profil admin.</p>
+        </div>
+
+        <div class="section">
+            <h2>✅ Corrections Appliquées</h2>
+            <ul style="list-style-position: inside; margin-left: 20px;">
+                <li>✅ Mot de passe admin réinitialisé avec hash bcrypt valide</li>
+                <li>✅ Variables DATABASE_URL et DIRECT_URL corrigées sur Vercel</li>
+                <li>✅ URLs mises à jour vers jaayndougou.app</li>
+                <li>✅ Configuration des cookies et sessions vérifiée</li>
+                <li>✅ Déploiement en production effectué</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📞 En cas de Problème</h2>
+            <p>Si la connexion ne fonctionne toujours pas :</p>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li>Vérifiez les logs Vercel : <code>vercel logs</code></li>
+                <li>Consultez le fichier <code>AUTH_PROBLEM_FIXED.md</code></li>
+                <li>Exécutez le diagnostic : <code>.\scripts\test-auth-final.ps1</code></li>
+            </ul>
+        </div>
+
+        <p style="text-align: center; color: #666; margin-top: 30px; font-size: 14px;">
+            Problème résolu le 5 février 2026<br>
+            Déploiement: <a href="https://jaayndougou.app" style="color: #667eea;">jaayndougou.app</a>
+        </p>
+    </div>
+
+    <script>
+        // Copier les identifiants au clic
+        document.getElementById('email').addEventListener('click', function() {
+            navigator.clipboard.writeText(this.textContent);
+            const original = this.textContent;
+            this.textContent = '✓ Copié !';
+            setTimeout(() => this.textContent = original, 2000);
+        });
+        
+        document.getElementById('password').addEventListener('click', function() {
+            navigator.clipboard.writeText(this.textContent);
+            const original = this.textContent;
+            this.textContent = '✓ Copié !';
+            setTimeout(() => this.textContent = original, 2000);
+        });
+    </script>
+</body>
+</html>

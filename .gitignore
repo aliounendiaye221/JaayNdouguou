@@ -39,6 +39,10 @@ yarn-error.log*
 !.env.example
 !.env.production.example
 
+# Secrets (ne jamais commiter)
+VERCEL_SECRETS.txt
+*.secrets.txt
+
 # vercel
 .vercel
 
