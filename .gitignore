@@ -36,10 +36,14 @@ yarn-error.log*
 .env.local
 .env.production
 .env.neon
+.env.vercel.local
 
 # Keep example files
 !.env.example
 !.env.production.example
+
+# Generated credentials (NEVER commit)
+tmp/credentials-*.md
 
 # Secrets (ne jamais commiter)
 VERCEL_SECRETS.txt

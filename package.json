@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "npx prisma generate && next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate-credentials": "node scripts/generate-credentials.js",
+    "setup-vercel": "bash scripts/setup-vercel-env.sh"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
