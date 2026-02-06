@@ -15,7 +15,6 @@ const nextConfig: NextConfig = {
     ],
   },
   compress: true,
-  trailingSlash: true,
   poweredByHeader: false,
   // Optimize for mobile
   compiler: {

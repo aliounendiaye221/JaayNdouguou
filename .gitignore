@@ -34,6 +34,8 @@ yarn-error.log*
 .env
 .env*.local
 .env.local
+.env.production
+.env.neon
 
 # Keep example files
 !.env.example
@@ -42,6 +44,15 @@ yarn-error.log*
 # Secrets (ne jamais commiter)
 VERCEL_SECRETS.txt
 *.secrets.txt
+VERCEL_ENV_FINAL.txt
+VERCEL_ENV_PRODUCTION.txt
+
+# Build artifacts
+build_log.txt
+errors.txt
+
+# Test files
+test-login.html
 
 # vercel
 .vercel
