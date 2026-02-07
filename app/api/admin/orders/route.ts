@@ -155,7 +155,12 @@ export async function DELETE(request: Request) {
             return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
         }
 
-        // Supprimer d'abord les articles de la commande
+        // Supprimer d'abord les réclamations liées à la commande
+        await prisma.claim.deleteMany({
+            where: { orderId }
+        });
+
+        // Supprimer les articles de la commande (aussi gérés par onDelete: Cascade)
         await prisma.orderItem.deleteMany({
             where: { orderId }
         });

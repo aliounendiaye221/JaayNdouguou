@@ -106,7 +106,7 @@ export default function Checkout() {
     );
   }
 
-  const deliveryFee = 1500; // Fixed delivery fee for now
+  const deliveryFee = total >= 10000 ? 0 : 1500;
   const finalTotal = total + deliveryFee;
 
   return (

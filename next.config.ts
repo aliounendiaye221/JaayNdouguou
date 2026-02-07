@@ -19,32 +19,16 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   // Optimize for mobile
   compiler: {
-    removeConsole: process.env.NODE_ENV === 'production'
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
   },
   // Enable experimental features
   experimental: {
     optimizePackageImports: ['lucide-react'],
   },
-  // Security and Cache headers
+  // Security headers are in vercel.json to avoid duplication
+  // Cache headers for static assets
   async headers() {
     return [
-      {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin',
-          },
-        ],
-      },
       {
         source: '/(.*)\\.(jpg|jpeg|png|gif|ico|svg|webp|avif)',
         headers: [

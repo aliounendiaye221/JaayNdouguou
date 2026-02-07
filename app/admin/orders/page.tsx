@@ -1,9 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Eye, Search, Filter, Download, ArrowRight, Calendar, CheckCircle, Clock, Truck, XCircle, Trash2, ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
+import { Search, Filter, Download, ArrowRight, Calendar, Trash2, ChevronLeft, ChevronRight, ShoppingBag } from "lucide-react";
 
 export default function OrdersPage() {
+    const router = useRouter();
     const [orders, setOrders] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -31,9 +33,16 @@ export default function OrdersPage() {
             params.append('search', searchTerm);
         }
         
-        fetch(`/api/admin/orders?${params.toString()}`)
-            .then(res => res.json())
+        fetch(`/api/admin/orders?${params.toString()}`, { credentials: 'include' })
+            .then(res => {
+                if (res.status === 401) {
+                    router.push('/login');
+                    return null;
+                }
+                return res.json();
+            })
             .then(data => {
+                if (!data) return;
                 console.log('📦 Données reçues de l\'API:', data);
                 
                 if (data.orders && Array.isArray(data.orders)) {
@@ -74,8 +83,14 @@ export default function OrdersPage() {
             const res = await fetch('/api/admin/orders', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ orderId, status })
+                body: JSON.stringify({ orderId, status }),
+                credentials: 'include'
             });
+            
+            if (res.status === 401) {
+                router.push('/login');
+                return;
+            }
             
             if (res.ok) {
                 fetchOrders();
@@ -92,8 +107,14 @@ export default function OrdersPage() {
 
         try {
             const res = await fetch(`/api/admin/orders?id=${orderId}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                credentials: 'include'
             });
+            
+            if (res.status === 401) {
+                router.push('/login');
+                return;
+            }
             
             if (res.ok) {
                 console.log('✅ Commande supprimée avec succès');

@@ -1,11 +1,12 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { authenticate } from '@/app/lib/actions';
 import { AlertCircle } from 'lucide-react';
 
 export default function LoginPage() {
-    const [errorMessage, dispatch] = useFormState(authenticate, undefined);
+    const [errorMessage, dispatch] = useActionState(authenticate, undefined);
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-gray-50">
@@ -62,7 +63,7 @@ function LoginButton() {
     return (
         <button
             className="w-full py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-bold rounded-lg shadow-md transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-disabled={pending}
+            disabled={pending}
         >
             {pending ? 'Connexion en cours...' : 'Se connecter'}
         </button>

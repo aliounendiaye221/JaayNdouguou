@@ -1,30 +1,34 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
     AlertCircle,
     CheckCircle,
     Clock,
-    Search,
     MessageSquare,
     Check,
-    Filter,
-    ArrowUpRight,
     User
 } from "lucide-react";
 
 export default function ClaimsPage() {
+    const router = useRouter();
     const [claims, setClaims] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchClaims = () => {
-        fetch('/api/admin/claims')
+        fetch('/api/admin/claims', { credentials: 'include' })
             .then(res => {
+                if (res.status === 401) {
+                    router.push('/login');
+                    return null;
+                }
                 if (!res.ok) {
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
                 return res.json();
             })
             .then(data => {
+                if (!data) return;
                 if (Array.isArray(data)) {
                     setClaims(data);
                 } else if (data.error) {
@@ -40,6 +44,26 @@ export default function ClaimsPage() {
                 setClaims([]);
                 setLoading(false);
             });
+    };
+
+    const resolveClaim = async (claimId: string) => {
+        try {
+            const res = await fetch('/api/admin/claims', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ claimId, status: 'resolved' }),
+                credentials: 'include'
+            });
+            if (res.status === 401) {
+                router.push('/login');
+                return;
+            }
+            if (res.ok) {
+                fetchClaims();
+            }
+        } catch (error) {
+            console.error('Failed to resolve claim:', error);
+        }
     };
 
     useEffect(() => {
@@ -148,14 +172,22 @@ export default function ClaimsPage() {
                             </div>
 
                             <div className="flex md:flex-col justify-end gap-3 min-w-[160px]">
-                                <button className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-200 transition-all active:scale-95">
+                                <button
+                                    onClick={() => resolveClaim(claim.id)}
+                                    className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-slate-900 text-white font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-200 transition-all active:scale-95"
+                                >
                                     <Check className="w-4 h-4" />
                                     <span>Résoudre</span>
                                 </button>
-                                <button className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-600 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-slate-50 transition-all">
+                                <a
+                                    href={`https://wa.me/${claim.customer?.phone?.replace(/\s+/g, '')}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex-1 md:flex-none inline-flex items-center justify-center gap-2 px-6 py-3 bg-white border border-slate-200 text-slate-600 font-black text-[10px] uppercase tracking-widest rounded-2xl hover:bg-slate-50 transition-all"
+                                >
                                     <MessageSquare className="w-4 h-4" />
                                     <span>Contacter</span>
-                                </button>
+                                </a>
                             </div>
                         </div>
                     ))

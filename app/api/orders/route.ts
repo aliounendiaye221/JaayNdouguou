@@ -7,6 +7,7 @@ import {
 } from '@/app/utils/payment';
 import { z } from 'zod';
 import { auth } from '@/auth';
+import { products as catalogProducts } from '@/app/data/products';
 
 // Force pas de cache pour les commandes
 export const dynamic = 'force-dynamic';
@@ -165,6 +166,24 @@ export async function POST(request: NextRequest) {
                             phone: customerInfo.phone,
                             address: deliveryInfo.address,
                             city: deliveryInfo.city,
+                        },
+                    });
+                }
+
+                // S'assurer que les produits existent en base (upsert depuis le catalogue statique)
+                for (const item of items) {
+                    const catalogProduct = catalogProducts.find(p => p.id === item.productId);
+                    await prisma.product.upsert({
+                        where: { id: item.productId },
+                        update: { price: item.price },
+                        create: {
+                            id: item.productId,
+                            name: item.name,
+                            price: item.price,
+                            unit: item.unit,
+                            image: catalogProduct?.image || '',
+                            category: catalogProduct?.category || 'Général',
+                            description: catalogProduct?.description || '',
                         },
                     });
                 }

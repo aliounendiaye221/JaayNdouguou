@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import {
     ShoppingBag,
     AlertCircle,
@@ -9,6 +10,7 @@ import {
 } from "lucide-react";
 
 export default function DashboardPage() {
+    const router = useRouter();
     const [data, setData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
@@ -17,7 +19,13 @@ export default function DashboardPage() {
     const loadData = async (isPoll = false) => {
         if (!isPoll) setIsRefreshing(true);
         try {
-            const res = await fetch('/api/admin/stats');
+            const res = await fetch('/api/admin/stats', { credentials: 'include' });
+            
+            if (res.status === 401) {
+                router.push('/login');
+                return;
+            }
+            
             const statsData = await res.json();
             
             if (!statsData || statsData.error) {
@@ -93,12 +101,10 @@ export default function DashboardPage() {
                         <Calendar className="w-4 h-4 text-emerald-600" />
                         <span>{new Date().toLocaleDateString('fr-SN', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
                     </div>
-                    <button className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-slate-200 hover:bg-emerald-600 hover:shadow-emerald-100 transition-all active:scale-95">
+                    <a href="/admin/orders" className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold shadow-xl shadow-slate-200 hover:bg-emerald-600 hover:shadow-emerald-100 transition-all active:scale-95">
                         <Plus className="w-5 h-5" />
-                        <span>
-                            <a href="/admin/orders">Gérer les Commandes</a>
-                        </span>
-                    </button>
+                        <span>Gérer les Commandes</span>
+                    </a>
                 </div>
             </div>
 

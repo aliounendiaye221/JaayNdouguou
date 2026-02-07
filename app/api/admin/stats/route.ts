@@ -18,126 +18,74 @@ export async function GET() {
         startOfWeek.setDate(now.getDate() - 7);
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-        const [
-            totalOrders,
-            ordersToday,
-            ordersThisWeek,
-            ordersThisMonth,
-            paidOrders,
-            totalRevenue,
-            revenueToday,
-            revenueThisWeek,
-            revenueThisMonth,
-            pendingOrders,
-            deliveringOrders,
-            deliveredOrders,
-            cancelledOrders,
-            pendingClaims,
-            recentOrders
-        ] = await Promise.all([
-            // Compteurs de commandes
-            prisma.order.count(),
-            prisma.order.count({
-                where: { createdAt: { gte: startOfDay } }
-            }),
-            prisma.order.count({
-                where: { createdAt: { gte: startOfWeek } }
-            }),
-            prisma.order.count({
-                where: { createdAt: { gte: startOfMonth } }
-            }),
-            
-            // Commandes payées
-            prisma.order.count({
-                where: { paymentStatus: 'paid' }
-            }),
+        // Une seule requête SQL pour toutes les stats de commandes
+        const [orderStats] = await prisma.$queryRaw<any[]>`
+            SELECT
+                COUNT(*)::int AS "totalOrders",
+                COUNT(*) FILTER (WHERE "createdAt" >= ${startOfDay})::int AS "ordersToday",
+                COUNT(*) FILTER (WHERE "createdAt" >= ${startOfWeek})::int AS "ordersThisWeek",
+                COUNT(*) FILTER (WHERE "createdAt" >= ${startOfMonth})::int AS "ordersThisMonth",
+                COUNT(*) FILTER (WHERE "paymentStatus" = 'paid')::int AS "paidOrders",
+                COUNT(*) FILTER (WHERE "status" = 'pending')::int AS "pendingOrders",
+                COUNT(*) FILTER (WHERE "status" IN ('confirmed', 'preparing', 'delivering'))::int AS "deliveringOrders",
+                COUNT(*) FILTER (WHERE "status" = 'delivered')::int AS "deliveredOrders",
+                COUNT(*) FILTER (WHERE "status" = 'cancelled')::int AS "cancelledOrders",
+                COALESCE(SUM("total") FILTER (WHERE "paymentStatus" = 'paid'), 0)::float AS "totalRevenue",
+                COALESCE(SUM("total") FILTER (WHERE "paymentStatus" = 'paid' AND "createdAt" >= ${startOfDay}), 0)::float AS "revenueToday",
+                COALESCE(SUM("total") FILTER (WHERE "paymentStatus" = 'paid' AND "createdAt" >= ${startOfWeek}), 0)::float AS "revenueThisWeek",
+                COALESCE(SUM("total") FILTER (WHERE "paymentStatus" = 'paid' AND "createdAt" >= ${startOfMonth}), 0)::float AS "revenueThisMonth"
+            FROM "Order"
+        `;
 
-            // Revenus
-            prisma.order.aggregate({
-                where: { paymentStatus: 'paid' },
-                _sum: { total: true }
-            }),
-            prisma.order.aggregate({
-                where: {
-                    paymentStatus: 'paid',
-                    createdAt: { gte: startOfDay }
+        // Requête séparée pour les claims (table différente)
+        const pendingClaims = await prisma.claim.count({
+            where: { status: 'pending' }
+        });
+
+        // Commandes récentes
+        const recentOrders = await prisma.order.findMany({
+            take: 10,
+            orderBy: { createdAt: 'desc' },
+            include: {
+                customer: {
+                    select: {
+                        id: true,
+                        firstName: true,
+                        lastName: true,
+                        phone: true,
+                        email: true
+                    }
                 },
-                _sum: { total: true }
-            }),
-            prisma.order.aggregate({
-                where: {
-                    paymentStatus: 'paid',
-                    createdAt: { gte: startOfWeek }
-                },
-                _sum: { total: true }
-            }),
-            prisma.order.aggregate({
-                where: {
-                    paymentStatus: 'paid',
-                    createdAt: { gte: startOfMonth }
-                },
-                _sum: { total: true }
-            }),
-
-            // Statuts des commandes
-            prisma.order.count({
-                where: { status: 'pending' }
-            }),
-            prisma.order.count({
-                where: { status: { in: ['confirmed', 'preparing', 'delivering'] } }
-            }),
-            prisma.order.count({
-                where: { status: 'delivered' }
-            }),
-            prisma.order.count({
-                where: { status: 'cancelled' }
-            }),
-
-            // Réclamations en attente
-            prisma.claim.count({
-                where: { status: 'pending' }
-            }),
-
-            // Commandes récentes
-            prisma.order.findMany({
-                take: 10,
-                orderBy: { createdAt: 'desc' },
-                include: {
-                    customer: {
-                        select: {
-                            id: true,
-                            firstName: true,
-                            lastName: true,
-                            phone: true,
-                            email: true
-                        }
-                    },
-                    items: {
-                        include: {
-                            product: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                    price: true,
-                                    image: true
-                                }
+                items: {
+                    include: {
+                        product: {
+                            select: {
+                                id: true,
+                                name: true,
+                                price: true,
+                                image: true
                             }
                         }
                     }
                 }
-            })
-        ]);
+            }
+        });
+
+        const {
+            totalOrders, ordersToday, ordersThisWeek, ordersThisMonth,
+            paidOrders, pendingOrders, deliveringOrders, deliveredOrders, cancelledOrders,
+            totalRevenue, revenueToday, revenueThisWeek, revenueThisMonth
+        } = orderStats;
 
         // Calcul du taux de conversion
-        const conversionRate = totalOrders > 0 ? ((paidOrders / totalOrders) * 100).toFixed(1) : '0';
+        const conversionRate = totalOrders > 0 ? parseFloat(((paidOrders / totalOrders) * 100).toFixed(1)) : 0;
         
         // Calcul de la valeur moyenne des commandes
         const averageOrderValue = paidOrders > 0 
-            ? Math.round((totalRevenue._sum.total || 0) / paidOrders)
+            ? Math.round(totalRevenue / paidOrders)
             : 0;
 
         const stats = {
-            // Commandes
             totalOrders,
             ordersToday,
             ordersThisWeek,
@@ -147,19 +95,13 @@ export async function GET() {
             deliveringOrders,
             deliveredOrders,
             cancelledOrders,
-
-            // Revenus
-            totalRevenue: totalRevenue._sum.total || 0,
-            revenueToday: revenueToday._sum.total || 0,
-            revenueThisWeek: revenueThisWeek._sum.total || 0,
-            revenueThisMonth: revenueThisMonth._sum.total || 0,
+            totalRevenue,
+            revenueToday,
+            revenueThisWeek,
+            revenueThisMonth,
             averageOrderValue,
-
-            // Métriques
-            conversionRate: parseFloat(conversionRate),
+            conversionRate,
             pendingClaims,
-
-            // Timestamp pour le cache
             lastUpdated: new Date().toISOString()
         };
 
@@ -168,7 +110,6 @@ export async function GET() {
             recentOrders
         });
 
-        // Add headers to prevent caching
         response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
         response.headers.set('Pragma', 'no-cache');
         response.headers.set('Expires', '0');

@@ -5,22 +5,7 @@ import { z } from 'zod';
 import { prisma, getDbInfo } from '@/app/utils/prisma';
 import bcrypt from 'bcryptjs';
 
-// Détection du domaine de production
-const PRODUCTION_DOMAIN = 'jaayndougou.app';
 const isProduction = process.env.NODE_ENV === 'production';
-
-// Fonction pour déterminer si on est sur le domaine personnalisé ou Vercel
-// Note: En production, on ne peut pas savoir à l'avance donc on configure pour le domaine personnalisé
-const getCookieDomain = () => {
-    // Sur domaine .app, on utilise le domaine avec point pour couvrir les sous-domaines
-    // Sur vercel.app, les cookies fonctionnent sans domaine explicite
-    if (isProduction) {
-        // Utiliser le domaine uniquement pour jaayndougou.app
-        // Vercel.app fonctionne automatiquement sans domaine
-        return `.${PRODUCTION_DOMAIN}`;
-    }
-    return undefined;
-};
 
 async function getUser(email: string) {
     try {

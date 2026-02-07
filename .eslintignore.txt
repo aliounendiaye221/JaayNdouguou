@@ -1,0 +1,31 @@
+# ESLint ignore patterns
+
+# Node modules
+node_modules/
+
+# Build outputs
+.next/
+out/
+build/
+dist/
+
+# Scripts (Node.js scripts using CommonJS)
+scripts/
+
+# Test files
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Config files
+*.config.js
+*.config.ts
+
+# Archive documentation
+docs/archive/
+
+# Dependencies
+package-lock.json
+yarn.lock
+pnpm-lock.yaml

@@ -51,8 +51,8 @@ console.log(`   - DIRECT_URL: ${dbInfo.hasDirectUrl ? '✅ Configuré' : '⚠️
 // Configuration optimisée pour Neon avec PgBouncer
 export const prisma = globalForPrisma.prisma ?? new PrismaClient({
     log: process.env.NODE_ENV === 'development' 
-        ? ['query', 'error', 'warn'] 
-        : ['error', 'warn'], // Garder warn en prod pour debug
+        ? ['error', 'warn'] 
+        : ['error', 'warn'],
     datasources: {
         db: {
             url: process.env.DATABASE_URL,
@@ -60,23 +60,7 @@ export const prisma = globalForPrisma.prisma ?? new PrismaClient({
     },
 })
 
-// Gestion de la connexion avec retry automatique (seulement au runtime)
-if (process.env.NODE_ENV === 'production' && typeof window === 'undefined') {
-    // Connexion automatique en production côté serveur
-    prisma.$connect()
-        .then(() => {
-            console.log('✅ [PRISMA] Connexion à Neon établie avec succès');
-        })
-        .catch((err) => {
-            console.error('❌ [PRISMA] Erreur de connexion:', err);
-            // Retry dans 5 secondes
-            setTimeout(() => {
-                prisma.$connect()
-                    .then(() => console.log('✅ [PRISMA] Reconnexion réussie'))
-                    .catch(console.error);
-            }, 5000);
-        });
-}
+// Prisma se connecte paresseusement, pas besoin de $connect() explicite
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
 
