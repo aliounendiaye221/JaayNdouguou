@@ -1,6 +1,9 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Initialisation lazy — ne pas crasher si la clé n'est pas définie
+const resend = process.env.RESEND_API_KEY
+    ? new Resend(process.env.RESEND_API_KEY)
+    : null;
 
 export interface OrderConfirmationEmailProps {
     customerName: string;
@@ -101,6 +104,11 @@ export async function sendOrderConfirmationEmail(
 </html>
     `;
 
+    if (!resend) {
+        console.warn('RESEND_API_KEY not configured — email not sent');
+        return { success: false, error: 'Email service not configured' };
+    }
+
     try {
         const data = await resend.emails.send({
             from: 'JaayNdougou <commandes@jaayndougou.sn>',
@@ -150,6 +158,11 @@ export async function sendContactEmail(data: {
 </body>
 </html>
     `;
+
+    if (!resend) {
+        console.warn('RESEND_API_KEY not configured — email not sent');
+        return { success: false, error: 'Email service not configured' };
+    }
 
     try {
         const result = await resend.emails.send({
