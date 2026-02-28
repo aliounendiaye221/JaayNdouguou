@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
+import GitHub from 'next-auth/providers/github';
 import { authConfig } from './auth.config';
 import { z } from 'zod';
 import { prisma, getDbInfo } from '@/app/utils/prisma';
@@ -79,6 +80,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     debug: !isProduction,
     
     providers: [
+        GitHub({
+            clientId: process.env.GITHUB_ID ?? '',
+            clientSecret: process.env.GITHUB_SECRET ?? '',
+        }),
         Credentials({
             credentials: {
                 email: { label: "Email", type: "email" },
