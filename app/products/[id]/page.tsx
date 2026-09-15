@@ -15,14 +15,16 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     const { id } = use(params);
     const initialProduct = products.find((p) => p.id === id);
     const [product, setProduct] = React.useState<any>(initialProduct);
+    const [allProducts, setAllProducts] = React.useState<any[]>(products);
     const { addToCart } = useCart();
     const [quantity, setQuantity] = React.useState(1);
 
     React.useEffect(() => {
-        fetch('/api/products')
+        fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' })
             .then(res => res.json())
             .then((list: any[]) => {
-                if (Array.isArray(list)) {
+                if (Array.isArray(list) && list.length > 0) {
+                    setAllProducts(list);
                     const found = list.find(p => p.id === id);
                     if (found) setProduct(found);
                 }
@@ -43,7 +45,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         }
     };
 
-    const relatedProducts = products
+    const relatedProducts = allProducts
         .filter((p) => p.category === product.category && p.id !== product.id)
         .slice(0, 4);
 

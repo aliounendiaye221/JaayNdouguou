@@ -23,12 +23,26 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isLoaded, setIsLoaded] = useState(false);
 
-    // Load cart from localStorage on mount
+    // Load cart from localStorage on mount and sync with live prices
     useEffect(() => {
         const savedCart = localStorage.getItem("cart");
         if (savedCart) {
             try {
-                setItems(JSON.parse(savedCart));
+                const parsed = JSON.parse(savedCart);
+                setItems(parsed);
+
+                // Synchroniser les prix du panier avec les derniers prix enregistrés en base
+                fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' })
+                    .then(res => res.json())
+                    .then((liveProducts: any[]) => {
+                        if (Array.isArray(liveProducts) && liveProducts.length > 0) {
+                            setItems(current => current.map(item => {
+                                const live = liveProducts.find(p => p.id === item.id);
+                                return live ? { ...item, price: live.price, name: live.name, image: live.image } : item;
+                            }));
+                        }
+                    })
+                    .catch(() => {});
             } catch (e) {
                 console.error("Failed to parse cart", e);
             }

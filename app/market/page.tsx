@@ -16,7 +16,7 @@ export default function Market() {
     const [searchTerm, setSearchTerm] = useState("");
 
     useEffect(() => {
-        fetch('/api/products')
+        fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' })
             .then(res => res.json())
             .then(data => {
                 if (Array.isArray(data) && data.length > 0) {

@@ -4,9 +4,10 @@ import { products as fallbackProducts } from '@/app/data/products';
 import { ensureProductsInitialized } from '@/app/utils/storeConfig';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 /**
- * GET: Liste des produits disponibles pour le marché public
+ * GET: Liste des produits disponibles pour le marché public (Temps réel)
  */
 export async function GET() {
     try {
@@ -22,16 +23,18 @@ export async function GET() {
             ],
         });
 
-        if (dbProducts.length > 0) {
-            const response = NextResponse.json(dbProducts);
-            response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
-            return response;
-        }
+        const products = dbProducts.length > 0 ? dbProducts : fallbackProducts;
+        const response = NextResponse.json(products);
 
-        // Repli catalogue statique si base vide
-        return NextResponse.json(fallbackProducts);
+        // TEMPS RÉEL : Aucun cache pour refléter instantanément les modifications de prix et stocks
+        response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0');
+        response.headers.set('Pragma', 'no-cache');
+        response.headers.set('Expires', '0');
+        return response;
     } catch (error) {
         console.warn('⚠️ [PRODUCTS_API] Repli sur le catalogue statique suite à une erreur DB:', error);
-        return NextResponse.json(fallbackProducts);
+        const response = NextResponse.json(fallbackProducts);
+        response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        return response;
     }
 }

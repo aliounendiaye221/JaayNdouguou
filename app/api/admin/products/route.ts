@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/app/utils/prisma';
 import { auth } from '@/auth';
 import { ensureProductsInitialized } from '@/app/utils/storeConfig';
+import { products as catalogProducts } from '@/app/data/products';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 export const dynamic = 'force-dynamic';
@@ -93,6 +95,13 @@ export async function POST(request: Request) {
             },
         });
 
+        // Révalidation immédiate du cache Next.js / Vercel
+        try {
+            revalidatePath('/');
+            revalidatePath('/market');
+            revalidatePath('/api/products');
+        } catch (_) {}
+
         return NextResponse.json({ success: true, product: newProduct }, { status: 201 });
     } catch (error) {
         console.error('Failed to create product:', error);
@@ -130,10 +139,32 @@ export async function PUT(request: Request) {
         if (typeof image === 'string') updateData.image = image;
         if (typeof description !== 'undefined') updateData.description = description;
 
-        const updatedProduct = await prisma.product.update({
+        const defaultItem = catalogProducts.find(p => p.id === id);
+
+        // Utilisation de upsert pour garantir que même si le produit n'était pas encore en base, la mise à jour fonctionne immédiatement
+        const updatedProduct = await prisma.product.upsert({
             where: { id },
-            data: updateData,
+            update: updateData,
+            create: {
+                id,
+                name: updateData.name || defaultItem?.name || id,
+                price: updateData.price !== undefined ? updateData.price : (defaultItem?.price || 500),
+                unit: updateData.unit || defaultItem?.unit || 'kg',
+                category: updateData.category || defaultItem?.category || 'Légumes',
+                image: updateData.image || defaultItem?.image || '/logo.png',
+                description: updateData.description !== undefined ? updateData.description : (defaultItem?.description || ''),
+                stock: updateData.stock !== undefined ? updateData.stock : 100,
+                isAvailable: updateData.isAvailable !== undefined ? updateData.isAvailable : true,
+            },
         });
+
+        // Révalidation en temps réel de tous les chemins pour propager les nouveaux prix immédiatement
+        try {
+            revalidatePath('/');
+            revalidatePath('/market');
+            revalidatePath('/api/products');
+            revalidatePath(`/products/${id}`);
+        } catch (_) {}
 
         return NextResponse.json({ success: true, product: updatedProduct });
     } catch (error) {
@@ -170,6 +201,14 @@ export async function DELETE(request: Request) {
                 where: { id },
                 data: { isAvailable: false, stock: 0 },
             });
+
+            try {
+                revalidatePath('/');
+                revalidatePath('/market');
+                revalidatePath('/api/products');
+                revalidatePath(`/products/${id}`);
+            } catch (_) {}
+
             return NextResponse.json({
                 success: true,
                 message: 'Le produit a été archivé (désactivé) car il est lié à des commandes existantes.',
@@ -180,6 +219,13 @@ export async function DELETE(request: Request) {
         await prisma.product.delete({
             where: { id },
         });
+
+        try {
+            revalidatePath('/');
+            revalidatePath('/market');
+            revalidatePath('/api/products');
+            revalidatePath(`/products/${id}`);
+        } catch (_) {}
 
         return NextResponse.json({ success: true, message: 'Produit supprimé avec succès' });
     } catch (error) {

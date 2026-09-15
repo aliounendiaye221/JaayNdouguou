@@ -1,6 +1,7 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ProductCard, { Product } from "./components/ProductCard";
+import FeaturedProducts from "./components/FeaturedProducts";
 import dynamic from 'next/dynamic';
 import { products } from "./data/products";
 import { ArrowRight, Leaf, Truck, ShieldCheck, TrendingUp } from "lucide-react";
@@ -34,17 +35,7 @@ export default function Home() {
                         Découvrez notre sélection de légumes frais, cultivés localement et livrés directement chez vous
                     </p>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {featuredProducts.map((product, index) => (
-                        <div
-                            key={product.id}
-                            className="animate-fadeInUp"
-                            style={{ animationDelay: `${index * 0.1}s` }}
-                        >
-                            <ProductCard product={product} priority={index < 4} />
-                        </div>
-                    ))}
-                </div>
+                <FeaturedProducts initialProducts={featuredProducts} />
 
                 {/* CTA Section */}
                 <div className="mt-16 text-center">
