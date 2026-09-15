@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import {
     ShoppingBag,
     AlertCircle,
@@ -154,19 +155,21 @@ export default function DashboardPage() {
             </div>
 
             {/* Middle Section: Recent Orders & Health Status */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
                 {/* Recent Orders Table - 2/3 Width */}
-                <div className="lg:col-span-2 bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden">
-                    <div className="p-8 border-b border-slate-50 flex items-center justify-between">
+                <div className="lg:col-span-2 bg-white rounded-2xl sm:rounded-[32px] shadow-sm border border-slate-100 overflow-hidden">
+                    <div className="p-4 sm:p-8 border-b border-slate-50 flex items-center justify-between">
                         <div>
-                            <h2 className="text-xl font-black text-slate-900">Commandes Récentes</h2>
-                            <p className="text-slate-400 text-sm font-medium mt-0.5">Dernières transactions effectuées sur le marché.</p>
+                            <h2 className="text-lg sm:text-xl font-black text-slate-900">Commandes Récentes</h2>
+                            <p className="text-slate-400 text-xs sm:text-sm font-medium mt-0.5">Dernières commandes passées sur la boutique.</p>
                         </div>
-                        <button className="text-slate-500 font-bold text-xs hover:text-emerald-600 transition-colors uppercase tracking-widest">
-                            <a href="/admin/orders">Voir tout</a>
-                        </button>
+                        <Link href="/admin/orders" className="text-slate-500 font-bold text-xs hover:text-emerald-600 transition-colors uppercase tracking-widest">
+                            Voir tout →
+                        </Link>
                     </div>
-                    <div className="overflow-x-auto">
+
+                    {/* Desktop Table */}
+                    <div className="hidden md:block overflow-x-auto">
                         <table className="w-full text-left">
                             <thead className="bg-slate-50/50">
                                 <tr>
@@ -229,6 +232,40 @@ export default function DashboardPage() {
                                 ))}
                             </tbody>
                         </table>
+                    </div>
+
+                    {/* Mobile Order Cards */}
+                    <div className="block md:hidden divide-y divide-slate-100">
+                        {recentOrders?.slice(0, 5).map((order: any) => (
+                            <Link
+                                key={order.id}
+                                href={`/admin/orders/${order.id}`}
+                                className="p-3.5 flex items-center justify-between hover:bg-slate-50 transition-colors block"
+                            >
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs font-black text-slate-900 truncate">
+                                            {order.customer?.firstName} {order.customer?.lastName}
+                                        </span>
+                                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${
+                                            order.status === 'delivered' ? 'bg-emerald-100 text-emerald-700' :
+                                            order.status === 'pending' ? 'bg-orange-100 text-orange-700' :
+                                            'bg-slate-100 text-slate-600'
+                                        }`}>
+                                            {order.status === 'delivered' ? 'Livré' : order.status === 'pending' ? 'Attente' : order.status}
+                                        </span>
+                                    </div>
+                                    <div className="text-[11px] text-slate-400 mt-0.5 font-medium">
+                                        #{order.orderNumber.slice(-6).toUpperCase()} · {new Date(order.createdAt).toLocaleDateString('fr-SN', { day: '2-digit', month: 'short' })}
+                                    </div>
+                                </div>
+                                <div className="text-right pl-2">
+                                    <span className="text-xs font-black text-emerald-700 block">
+                                        {order.total.toLocaleString()} F
+                                    </span>
+                                </div>
+                            </Link>
+                        ))}
                     </div>
                 </div>
 

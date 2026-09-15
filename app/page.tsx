@@ -1,7 +1,6 @@
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import ProductCard, { Product } from "./components/ProductCard";
-import PromoBanner from "./components/PromoBanner";
 import dynamic from 'next/dynamic';
 import { products } from "./data/products";
 import { ArrowRight, Leaf, Truck, ShieldCheck, TrendingUp } from "lucide-react";
@@ -20,7 +19,6 @@ const featuredProducts = products.slice(0, 4);
 export default function Home() {
     return (
         <main className="min-h-screen">
-            <PromoBanner />
             <Navbar />
             <Hero />
 

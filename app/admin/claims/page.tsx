@@ -136,7 +136,7 @@ export default function ClaimsPage() {
                     claims.map((claim: any) => (
                         <div
                             key={claim.id}
-                            className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-100 flex flex-col md:flex-row gap-8 group hover:shadow-xl hover:shadow-slate-200 transition-all duration-300 transform hover:-translate-y-1"
+                            className="bg-white p-4 sm:p-8 rounded-2xl sm:rounded-[32px] shadow-sm border border-slate-100 flex flex-col md:flex-row gap-6 sm:gap-8 group hover:shadow-xl hover:shadow-slate-200 transition-all duration-300"
                         >
                             <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-4">

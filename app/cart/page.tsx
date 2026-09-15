@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Trash2, Plus, Minus, ArrowLeft, MessageCircle, ShoppingBag, Truck, ShieldCheck, CreditCard } from "lucide-react";
+import { Trash2, Plus, Minus, ArrowLeft, MessageCircle, ShoppingBag, ShieldCheck, CreditCard } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CartContext";
 import { formatCartForWhatsApp, openWhatsAppWithMessage, WHATSAPP_BUSINESS_NUMBER } from "../utils/whatsapp";
@@ -110,10 +110,6 @@ export default function Cart() {
                             </div>
                         ))}
 
-                        <div className="flex items-center gap-4 p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100 text-emerald-800">
-                            <Truck className="shrink-0 w-6 h-6" />
-                            <p className="font-medium">Livraison gratuite dès 15,000 FCFA d'achats !</p>
-                        </div>
                     </div>
 
                     {/* Order Summary */}

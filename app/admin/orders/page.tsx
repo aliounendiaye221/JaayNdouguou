@@ -195,8 +195,10 @@ export default function OrdersPage() {
                 </div>
             </div>
 
-            <div className="bg-white rounded-[32px] shadow-sm border border-slate-100 overflow-hidden">
-                <div className="overflow-x-auto">
+            {/* Container Commandes : Table sur Desktop, Cartes sur Mobile */}
+            <div className="bg-white rounded-2xl md:rounded-[32px] shadow-sm border border-slate-100 overflow-hidden">
+                {/* 🖥️ Vue Desktop (Tableau) */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-slate-50/50">
@@ -304,29 +306,152 @@ export default function OrdersPage() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* 📱 Vue Mobile (Cartes Tactiles & Ergonomiques) */}
+                <div className="block md:hidden divide-y divide-slate-100">
+                    {loading ? (
+                        [1, 2, 3].map(i => (
+                            <div key={i} className="p-4 space-y-3 animate-pulse">
+                                <div className="h-4 bg-slate-100 rounded w-1/3" />
+                                <div className="h-5 bg-slate-100 rounded w-2/3" />
+                                <div className="h-10 bg-slate-100 rounded w-full" />
+                            </div>
+                        ))
+                    ) : orders.length === 0 ? (
+                        <div className="p-8 text-center">
+                            <ShoppingBag className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+                            <p className="text-slate-600 font-bold text-sm">Aucune commande</p>
+                        </div>
+                    ) : (
+                        orders.map((order: any) => (
+                            <div key={order.id} className="p-4 space-y-3 hover:bg-slate-50/50 transition-colors">
+                                {/* En-tête Carte : Réf + Date + Statut Paiement */}
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className="text-sm font-black text-slate-900 block">
+                                            #{order.orderNumber.toUpperCase()}
+                                        </span>
+                                        <span className="text-[11px] text-slate-400 font-medium">
+                                            {new Date(order.createdAt).toLocaleDateString('fr-SN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                    </div>
+                                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider ${
+                                        order.paymentStatus === 'paid'
+                                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                            : 'bg-orange-50 text-orange-700 border border-orange-200'
+                                    }`}>
+                                        {order.paymentStatus === 'paid' ? '✓ Payé' : 'En attente'}
+                                    </span>
+                                </div>
+
+                                {/* Client & Téléphone direct */}
+                                <div className="flex items-center justify-between bg-slate-50 p-3 rounded-xl">
+                                    <div className="min-w-0 flex-1">
+                                        <p className="text-sm font-bold text-slate-900 truncate">
+                                            {order.customer?.firstName} {order.customer?.lastName}
+                                        </p>
+                                        <p className="text-xs text-slate-500 truncate">
+                                            📍 {order.deliveryCity || 'Dakar'}
+                                        </p>
+                                    </div>
+                                    {order.customer?.phone && (
+                                        <a
+                                            href={`tel:${order.customer.phone.replace(/\s+/g, '')}`}
+                                            className="ml-2 px-3 py-1.5 bg-white border border-slate-200 text-emerald-700 text-xs font-bold rounded-lg shadow-sm hover:bg-emerald-50 active:scale-95 flex items-center gap-1 flex-shrink-0"
+                                        >
+                                            <span>📞</span>
+                                            <span>Appeler</span>
+                                        </a>
+                                    )}
+                                </div>
+
+                                {/* Montant & Articles */}
+                                <div className="flex items-center justify-between px-1">
+                                    <div>
+                                        <span className="text-xs text-slate-400 font-medium block">Total</span>
+                                        <span className="text-base font-black text-slate-900">
+                                            {order.total.toLocaleString()} FCFA
+                                        </span>
+                                    </div>
+                                    <div className="text-right">
+                                        <span className="text-xs text-slate-400 font-medium block">Articles</span>
+                                        <span className="text-xs font-bold text-slate-700">
+                                            {order.items?.length || 0} produit(s)
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Sélecteur Statut Mobile */}
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+                                        Statut de la commande
+                                    </label>
+                                    <select
+                                        value={order.status}
+                                        onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                                        className="w-full text-xs font-bold border-2 rounded-xl px-3 py-2.5 bg-white cursor-pointer focus:ring-2 focus:ring-emerald-500"
+                                        style={{
+                                            borderColor: order.status === 'delivered' ? '#10b981' : 
+                                                       order.status === 'cancelled' ? '#ef4444' : 
+                                                       order.status === 'delivering' ? '#6366f1' : '#f59e0b',
+                                            color: order.status === 'delivered' ? '#10b981' : 
+                                                   order.status === 'cancelled' ? '#ef4444' : 
+                                                   order.status === 'delivering' ? '#6366f1' : '#f59e0b'
+                                        }}
+                                    >
+                                        <option value="pending">⏳ En attente</option>
+                                        <option value="confirmed">👍 Confirmé</option>
+                                        <option value="preparing">🍳 En préparation</option>
+                                        <option value="delivering">🚚 En livraison</option>
+                                        <option value="delivered">✅ Livré</option>
+                                        <option value="cancelled">❌ Annulé</option>
+                                    </select>
+                                </div>
+
+                                {/* Actions : Bouton Détails & Supprimer */}
+                                <div className="flex items-center gap-2 pt-1">
+                                    <Link
+                                        href={`/admin/orders/${order.id}`}
+                                        className="flex-1 text-center py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-emerald-600 transition-colors active:scale-95 flex items-center justify-center gap-1.5"
+                                    >
+                                        <span>Voir la facture & détails</span>
+                                        <ArrowRight className="w-3.5 h-3.5" />
+                                    </Link>
+                                    <button
+                                        onClick={() => deleteOrder(order.id, order.orderNumber)}
+                                        className="p-2.5 bg-red-50 text-red-600 rounded-xl border border-red-200 active:scale-95"
+                                        title="Supprimer"
+                                    >
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
                 
                 {/* Pagination */}
                 {pagination.totalPages > 1 && (
-                    <div className="px-6 py-4 border-t border-slate-100 flex items-center justify-between">
-                        <p className="text-sm text-slate-600">
-                            Page <span className="font-bold">{pagination.page}</span> sur <span className="font-bold">{pagination.totalPages}</span> · 
-                            Total: <span className="font-bold text-emerald-600">{pagination.totalCount}</span> commande(s)
+                    <div className="px-4 md:px-6 py-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <p className="text-xs md:text-sm text-slate-600 text-center sm:text-left">
+                            Page <span className="font-bold">{pagination.page}</span> / <span className="font-bold">{pagination.totalPages}</span> · 
+                            Total: <span className="font-bold text-emerald-600">{pagination.totalCount}</span>
                         </p>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
                             <button
                                 onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                                 disabled={currentPage === 1}
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-sm font-bold hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1 px-3 py-2 bg-slate-50 text-slate-600 rounded-xl text-xs md:text-sm font-bold hover:bg-slate-100 disabled:opacity-50 transition-all"
                             >
                                 <ChevronLeft className="w-4 h-4" />
-                                Précédent
+                                <span>Précédent</span>
                             </button>
                             <button
                                 onClick={() => setCurrentPage(prev => Math.min(pagination.totalPages, prev + 1))}
                                 disabled={currentPage === pagination.totalPages}
-                                className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-bold hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1 px-3 py-2 bg-emerald-600 text-white rounded-xl text-xs md:text-sm font-bold hover:bg-emerald-700 disabled:opacity-50 transition-all"
                             >
-                                Suivant
+                                <span>Suivant</span>
                                 <ChevronRight className="w-4 h-4" />
                             </button>
                         </div>

@@ -283,103 +283,105 @@ export default function AdminProductsPage() {
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Header & Statistiques Rapides */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 md:gap-6">
                 <div>
-                    <h1 className="text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-                        <span>Gestion des Produits & Stocks</span>
-                        <span className="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+                    <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2 sm:gap-3 flex-wrap">
+                        <span>Produits & Stocks</span>
+                        <span className="text-[10px] sm:text-xs bg-emerald-100 text-emerald-700 px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
                             Direct Base
                         </span>
                     </h1>
-                    <p className="text-slate-500 font-medium mt-1">
-                        Ajustez les prix, gérez les quantités en stock et activez/désactivez vos références en temps réel.
+                    <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
+                        Ajustez les prix, stocks et disponibilités en temps réel.
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="grid grid-cols-2 sm:flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
                     <button
                         onClick={fetchProducts}
-                        className="flex items-center gap-2 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition-all text-sm shadow-sm"
+                        className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 transition-all text-xs sm:text-sm shadow-sm active:scale-95"
                     >
                         <RefreshCw className="w-4 h-4" />
                         <span>Actualiser</span>
                     </button>
                     <button
                         onClick={() => openEditModal()}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all text-sm active:scale-95"
+                        className="flex items-center justify-center gap-1.5 px-3 sm:px-5 py-2.5 bg-emerald-600 text-white rounded-xl font-bold shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-all text-xs sm:text-sm active:scale-95"
                     >
                         <Plus className="w-4 h-4" />
-                        <span>Nouveau Produit</span>
+                        <span>Ajouter</span>
                     </button>
                 </div>
             </div>
 
-            {/* Cartes KPI */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Total Références</p>
-                        <h3 className="text-3xl font-black text-slate-900 mt-1">{stats.totalProducts}</h3>
-                        <p className="text-xs text-slate-500 font-medium mt-1">Produits au catalogue</p>
+            {/* Cartes KPI (2 colonnes sur mobile, 4 sur desktop) */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+                <div className="bg-white p-3.5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-slate-400">Total Références</p>
+                        <div className="p-1.5 sm:p-2 bg-blue-50 text-blue-600 rounded-xl">
+                            <Package className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </div>
                     </div>
-                    <div className="p-3 bg-blue-50 text-blue-600 rounded-2xl">
-                        <Package className="w-6 h-6" />
-                    </div>
+                    <h3 className="text-xl sm:text-3xl font-black text-slate-900 mt-2">{stats.totalProducts}</h3>
+                    <p className="text-[10px] sm:text-xs text-slate-400 font-medium mt-0.5">Produits actifs</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Valeur Totale Stock</p>
-                        <h3 className="text-2xl font-black text-slate-900 mt-1">{stats.totalStockValue.toLocaleString()} <span className="text-sm font-bold text-slate-500">FCFA</span></h3>
-                        <p className="text-xs text-slate-500 font-medium mt-1">Valorisation actuelle</p>
+                <div className="bg-white p-3.5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-slate-400">Valeur Stock</p>
+                        <div className="p-1.5 sm:p-2 bg-emerald-50 text-emerald-600 rounded-xl">
+                            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </div>
                     </div>
-                    <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl">
-                        <TrendingUp className="w-6 h-6" />
-                    </div>
+                    <h3 className="text-lg sm:text-2xl font-black text-slate-900 mt-2 truncate">
+                        {stats.totalStockValue.toLocaleString()} <span className="text-xs font-bold text-slate-400">F</span>
+                    </h3>
+                    <p className="text-[10px] sm:text-xs text-slate-400 font-medium mt-0.5">Valorisation totale</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Stock Faible</p>
-                        <h3 className="text-3xl font-black text-orange-600 mt-1">{stats.lowStock}</h3>
-                        <p className="text-xs text-orange-500 font-medium mt-1">≤ 20 unités restantes</p>
+                <div className="bg-white p-3.5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-slate-400">Stock Faible</p>
+                        <div className="p-1.5 sm:p-2 bg-orange-50 text-orange-600 rounded-xl">
+                            <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </div>
                     </div>
-                    <div className="p-3 bg-orange-50 text-orange-600 rounded-2xl">
-                        <AlertTriangle className="w-6 h-6" />
-                    </div>
+                    <h3 className="text-xl sm:text-3xl font-black text-orange-600 mt-2">{stats.lowStock}</h3>
+                    <p className="text-[10px] sm:text-xs text-orange-400 font-medium mt-0.5">≤ 20 unités</p>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
-                    <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Rupture / Inactif</p>
-                        <h3 className="text-3xl font-black text-red-600 mt-1">{stats.outOfStock}</h3>
-                        <p className="text-xs text-red-500 font-medium mt-1">Non commandable</p>
+                <div className="bg-white p-3.5 sm:p-6 rounded-2xl border border-slate-100 shadow-sm flex flex-col justify-between">
+                    <div className="flex items-center justify-between">
+                        <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider text-slate-400">Ruptures</p>
+                        <div className="p-1.5 sm:p-2 bg-red-50 text-red-600 rounded-xl">
+                            <Boxes className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </div>
                     </div>
-                    <div className="p-3 bg-red-50 text-red-600 rounded-2xl">
-                        <Boxes className="w-6 h-6" />
-                    </div>
+                    <h3 className="text-xl sm:text-3xl font-black text-red-600 mt-2">{stats.outOfStock}</h3>
+                    <p className="text-[10px] sm:text-xs text-red-400 font-medium mt-0.5">Stock épuisé</p>
                 </div>
             </div>
 
             {/* Barre de Recherche et Filtres */}
-            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col md:flex-row gap-4 items-center justify-between">
+            <div className="bg-white p-3 sm:p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col sm:flex-row gap-2.5 sm:gap-4 items-stretch sm:items-center justify-between">
                 <div className="relative flex-1 w-full">
-                    <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                    <Search className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
                         type="text"
-                        placeholder="Rechercher un légume, fruit, tubercule..."
+                        placeholder="Rechercher par nom..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-12 pr-4 py-2.5 bg-slate-50 border-none rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-500"
+                        className="w-full pl-10 pr-3 py-2 sm:py-2.5 bg-slate-50 border-none rounded-xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-emerald-500"
                     />
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <div className="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
                     <select
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
-                        className="bg-slate-50 border-none rounded-xl text-sm font-bold text-slate-700 px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+                        className="bg-slate-50 border-none rounded-xl text-xs sm:text-sm font-bold text-slate-700 px-3 py-2 sm:py-2.5 focus:ring-2 focus:ring-emerald-500 cursor-pointer w-full"
                     >
-                        <option value="all">Toutes les catégories</option>
+                        <option value="all">Catégories</option>
                         {categories.map(cat => (
                             <option key={cat} value={cat}>{cat}</option>
                         ))}
@@ -388,19 +390,20 @@ export default function AdminProductsPage() {
                     <select
                         value={stockFilter}
                         onChange={(e: any) => setStockFilter(e.target.value)}
-                        className="bg-slate-50 border-none rounded-xl text-sm font-bold text-slate-700 px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+                        className="bg-slate-50 border-none rounded-xl text-xs sm:text-sm font-bold text-slate-700 px-3 py-2 sm:py-2.5 focus:ring-2 focus:ring-emerald-500 cursor-pointer w-full"
                     >
-                        <option value="all">Tous les stocks</option>
-                        <option value="in-stock">En stock (&gt; 20)</option>
-                        <option value="low">Stock faible (≤ 20)</option>
-                        <option value="out">Rupture / Inactif</option>
+                        <option value="all">Stocks</option>
+                        <option value="in-stock">En stock</option>
+                        <option value="low">Faible (≤ 20)</option>
+                        <option value="out">Rupture</option>
                     </select>
                 </div>
             </div>
 
-            {/* Table des Produits */}
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
-                <div className="overflow-x-auto">
+            {/* Table des Produits (Desktop) et Cartes Produits (Mobile) */}
+            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
+                {/* 🖥️ Vue Desktop (Tableau Éditables) */}
+                <div className="hidden md:block overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
                             <tr className="bg-slate-50/50 border-b border-slate-100">
@@ -480,41 +483,23 @@ export default function AdminProductsPage() {
                                             </div>
                                         </td>
 
-                                        {/* Stock (Édition Directe avec Badges) */}
+                                        {/* Stock (Édition Directe) */}
                                         <td className="px-6 py-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="flex items-center">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleInlineChange(product.id, 'stock', Math.max(0, currentStock - 5))}
-                                                        className="w-7 h-7 bg-slate-100 text-slate-600 rounded-l-lg hover:bg-slate-200 font-black text-sm flex items-center justify-center"
-                                                    >
-                                                        -
-                                                    </button>
-                                                    <input
-                                                        type="number"
-                                                        value={currentStock}
-                                                        onChange={(e) => handleInlineChange(product.id, 'stock', parseInt(e.target.value) || 0)}
-                                                        className="w-16 py-1 bg-slate-50 border-y border-slate-200 text-center text-sm font-black text-slate-800 focus:bg-white focus:ring-0"
-                                                        min="0"
-                                                    />
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleInlineChange(product.id, 'stock', currentStock + 5)}
-                                                        className="w-7 h-7 bg-slate-100 text-slate-600 rounded-r-lg hover:bg-slate-200 font-black text-sm flex items-center justify-center"
-                                                    >
-                                                        +
-                                                    </button>
-                                                </div>
-
-                                                {/* Badge d'état de stock */}
-                                                <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider ${
-                                                    isOut ? 'bg-red-50 text-red-600 border border-red-200' :
-                                                    isLow ? 'bg-orange-50 text-orange-600 border border-orange-200' :
-                                                    'bg-emerald-50 text-emerald-600 border border-emerald-200'
-                                                }`}>
-                                                    {isOut ? 'Rupture' : isLow ? 'Faible' : 'OK'}
-                                                </span>
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="number"
+                                                    value={currentStock}
+                                                    onChange={(e) => handleInlineChange(product.id, 'stock', parseInt(e.target.value) || 0)}
+                                                    className={`w-20 px-3 py-1.5 border rounded-lg text-sm font-black focus:bg-white focus:ring-2 ${
+                                                        isOut
+                                                            ? 'bg-red-50 border-red-200 text-red-700 focus:ring-red-400'
+                                                            : isLow
+                                                            ? 'bg-orange-50 border-orange-200 text-orange-700 focus:ring-orange-400'
+                                                            : 'bg-slate-50 border-slate-200 text-slate-800 focus:ring-emerald-500'
+                                                    }`}
+                                                    min="0"
+                                                />
+                                                <span className="text-xs text-slate-400 font-bold">{product.unit}</span>
                                             </div>
                                         </td>
 
@@ -583,15 +568,174 @@ export default function AdminProductsPage() {
                         </tbody>
                     </table>
                 </div>
+
+                {/* 📱 Vue Mobile (Cartes Produits Tactiles) */}
+                <div className="block md:hidden divide-y divide-slate-100">
+                    {loading ? (
+                        [1, 2, 3].map(i => (
+                            <div key={i} className="p-4 space-y-3 animate-pulse">
+                                <div className="flex gap-3">
+                                    <div className="w-14 h-14 bg-slate-100 rounded-xl flex-shrink-0" />
+                                    <div className="flex-1 space-y-2">
+                                        <div className="h-4 bg-slate-100 rounded w-1/2" />
+                                        <div className="h-3 bg-slate-100 rounded w-1/4" />
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : filteredProducts.length === 0 ? (
+                        <div className="p-8 text-center text-slate-500 font-medium text-sm">
+                            Aucun produit trouvé selon les critères.
+                        </div>
+                    ) : (
+                        filteredProducts.map((product) => {
+                            const edits = inlineEdits[product.id] || {};
+                            const currentPrice = edits.price !== undefined ? edits.price : product.price;
+                            const currentStock = edits.stock !== undefined ? edits.stock : product.stock;
+                            const hasUnsavedChanges = edits.price !== undefined || edits.stock !== undefined;
+
+                            const isLow = currentStock > 0 && currentStock <= 20 && product.isAvailable;
+                            const isOut = currentStock <= 0 || !product.isAvailable;
+
+                            return (
+                                <div key={product.id} className="p-3.5 space-y-3 hover:bg-slate-50/50 transition-colors">
+                                    {/* Ligne 1 : Image + Titre + Badges */}
+                                    <div className="flex items-start gap-3">
+                                        <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden relative flex-shrink-0 border border-slate-200">
+                                            <Image
+                                                src={product.image || '/logo.png'}
+                                                alt={product.name}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center justify-between gap-1">
+                                                <h4 className="text-sm font-black text-slate-900 truncate">
+                                                    {product.name}
+                                                </h4>
+                                                <span className={`px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider flex-shrink-0 ${
+                                                    isOut
+                                                        ? 'bg-red-100 text-red-700'
+                                                        : isLow
+                                                        ? 'bg-orange-100 text-orange-700'
+                                                        : 'bg-emerald-100 text-emerald-700'
+                                                }`}>
+                                                    {isOut ? 'Rupture' : isLow ? 'Stock Bas' : 'En Stock'}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2 mt-0.5">
+                                                <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                                                    {product.category}
+                                                </span>
+                                                <span className="text-[10px] text-slate-400 font-medium">
+                                                    Unité: {product.unit}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Ligne 2 : Champs d'édition directe (Prix & Stock) */}
+                                    <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                                        <div>
+                                            <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                                                Prix (FCFA)
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={currentPrice}
+                                                onChange={(e) => handleInlineChange(product.id, 'price', parseFloat(e.target.value) || 0)}
+                                                className="w-full px-2.5 py-1.5 bg-white border border-slate-200 rounded-lg text-sm font-black text-emerald-700 focus:ring-2 focus:ring-emerald-500"
+                                                min="0"
+                                                step="50"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">
+                                                Stock ({product.unit})
+                                            </label>
+                                            <input
+                                                type="number"
+                                                value={currentStock}
+                                                onChange={(e) => handleInlineChange(product.id, 'stock', parseInt(e.target.value) || 0)}
+                                                className={`w-full px-2.5 py-1.5 border rounded-lg text-sm font-black focus:ring-2 ${
+                                                    isOut
+                                                        ? 'bg-red-50 border-red-200 text-red-700'
+                                                        : isLow
+                                                        ? 'bg-orange-50 border-orange-200 text-orange-700'
+                                                        : 'bg-white border-slate-200 text-slate-800 focus:ring-emerald-500'
+                                                }`}
+                                                min="0"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Ligne 3 : Actions Mobile */}
+                                    <div className="flex items-center justify-between gap-2 pt-0.5">
+                                        <button
+                                            type="button"
+                                            onClick={() => toggleAvailability(product)}
+                                            disabled={savingId === product.id}
+                                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl font-bold text-xs transition-all ${
+                                                product.isAvailable
+                                                    ? 'bg-emerald-100 text-emerald-800'
+                                                    : 'bg-slate-100 text-slate-500'
+                                            }`}
+                                        >
+                                            {product.isAvailable ? (
+                                                <>
+                                                    <ToggleRight className="w-4 h-4 text-emerald-600" />
+                                                    <span>En Vente</span>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <ToggleLeft className="w-4 h-4 text-slate-400" />
+                                                    <span>Masqué</span>
+                                                </>
+                                            )}
+                                        </button>
+
+                                        <div className="flex items-center gap-1.5">
+                                            {hasUnsavedChanges && (
+                                                <button
+                                                    onClick={() => saveInlineChanges(product)}
+                                                    disabled={savingId === product.id}
+                                                    className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 shadow-sm flex items-center gap-1 animate-pulse active:scale-95"
+                                                >
+                                                    <Save className="w-3.5 h-3.5" />
+                                                    <span>Enregistrer</span>
+                                                </button>
+                                            )}
+                                            <button
+                                                onClick={() => openEditModal(product)}
+                                                className="p-2 text-slate-500 hover:text-slate-800 bg-slate-100 rounded-lg active:scale-95"
+                                                title="Modifier les détails"
+                                            >
+                                                <Edit3 className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                onClick={() => handleDeleteProduct(product)}
+                                                className="p-2 text-red-500 hover:text-red-700 bg-red-50 rounded-lg active:scale-95"
+                                                title="Supprimer"
+                                            >
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
             </div>
 
-            {/* Modal d'Ajout / Édition */}
+            {/* Modal d'Ajout / Édition (100% Mobile Friendly) */}
             {isModalOpen && (
-                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-3xl max-w-xl w-full p-8 shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
-                        <div className="flex items-center justify-between pb-6 border-b border-slate-100">
-                            <h2 className="text-xl font-black text-slate-900">
-                                {editingProduct ? `Modifier "${editingProduct.name}"` : 'Ajouter un nouveau produit'}
+                <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4">
+                    <div className="bg-white rounded-2xl sm:rounded-3xl max-w-xl w-full p-5 sm:p-8 max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex items-center justify-between pb-4 sm:pb-6 border-b border-slate-100">
+                            <h2 className="text-lg sm:text-xl font-black text-slate-900 truncate">
+                                {editingProduct ? `Modifier "${editingProduct.name}"` : 'Ajouter un produit'}
                             </h2>
                             <button
                                 onClick={() => setIsModalOpen(false)}
