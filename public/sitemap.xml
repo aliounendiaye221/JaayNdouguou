@@ -151,4 +151,40 @@
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://jaayndougou.app/products/patate-douce/</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jaayndougou.app/products/limon/</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jaayndougou.app/products/courgette/</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jaayndougou.app/products/hibiscus/</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jaayndougou.app/products/aubergine-amere/</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://jaayndougou.app/products/pain-de-singe/</loc>
+    <lastmod>2026-03-15</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>

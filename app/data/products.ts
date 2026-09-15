@@ -199,5 +199,59 @@ export const products: Product[] = [
         image: "/mangue.png",
         category: "Fruits",
         description: "Mangues locales savoureuses, fondantes et sucrées."
+    },
+    {
+        id: "patate-douce",
+        name: "Patate Douce",
+        price: 600,
+        unit: "kg",
+        image: "/patate.png",
+        category: "Tubercules",
+        description: "Patates douces locales fraîches, riches en vitamines et savoureuses."
+    },
+    {
+        id: "limon",
+        name: "Limon (Citron Vert)",
+        price: 1000,
+        unit: "kg",
+        image: "/limon.png",
+        category: "Fruits",
+        description: "Petits limons verts locaux très juteux et parfumés pour vos assaisonnements et jus."
+    },
+    {
+        id: "courgette",
+        name: "Courgette",
+        price: 700,
+        unit: "kg",
+        image: "/courgette.png",
+        category: "Légumes",
+        description: "Courgettes fraîches et fermes, idéales pour vos sautés et ragoûts."
+    },
+    {
+        id: "hibiscus",
+        name: "Hibiscus (Bissap)",
+        price: 1200,
+        unit: "kg",
+        image: "/hibiscus.png",
+        category: "Épices",
+        description: "Fleurs d'hibiscus séchées de qualité supérieure pour un bissap rouge intense et rafraîchissant."
+    },
+    {
+        id: "aubergine-amere",
+        name: "Aubergine Amère (Jaxatu)",
+        price: 500,
+        unit: "kg",
+        image: "/aubergine-amere.png",
+        category: "Légumes",
+        description: "Aubergines amères (Jaxatu / Diakhatou) fraîches, indispensables pour un authentique Thiéboudienne."
+    },
+    {
+        id: "pain-de-singe",
+        name: "Pain de Singe (Bouye)",
+        price: 1500,
+        unit: "kg",
+        image: "/pain-de-singe.png",
+        category: "Fruits",
+        description: "Fruit du baobab (Bouye) 100% naturel, riche en calcium et vitamine C pour de délicieux jus onctueux."
     }
 ];

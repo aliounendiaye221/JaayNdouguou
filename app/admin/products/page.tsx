@@ -850,6 +850,12 @@ export default function AdminProductsPage() {
                                             { label: 'Banane', path: '/banane.png' },
                                             { label: 'Orange', path: '/orange.png' },
                                             { label: 'Mangue', path: '/mangue.png' },
+                                            { label: 'Patate', path: '/patate.png' },
+                                            { label: 'Limon', path: '/limon.png' },
+                                            { label: 'Courgette', path: '/courgette.png' },
+                                            { label: 'Hibiscus', path: '/hibiscus.png' },
+                                            { label: 'Aubergine Amère', path: '/aubergine-amere.png' },
+                                            { label: 'Bouye', path: '/pain-de-singe.png' },
                                         ].map(preset => (
                                             <button
                                                 key={preset.path}
