@@ -118,3 +118,15 @@ model Claim {
   
   @@map("Claim")
 }
+
+model StoreConfig {
+  id                    String   @id @default("default")
+  deliveryFee           Float    @default(1500)
+  freeDeliveryThreshold Float    @default(10000)
+  whatsappNumber        String   @default("+221786037913")
+  storeOpen             Boolean  @default(true)
+  announcementMessage   String?  @default("Livraison rapide en 2h à Dakar et Rufisque !")
+  updatedAt             DateTime @updatedAt
+
+  @@map("StoreConfig")
+}

@@ -5,7 +5,7 @@ import Link from "next/link";
 import InvoiceActions from "./InvoiceActions";
 
 // Using default export for page component
-export default async function OrderDetailPage({ params }: { params: { id: string } }) {
+export default async function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
     // Await params object before accessing properties (Next.js 15+ requirement)
     const { id } = await params;
 

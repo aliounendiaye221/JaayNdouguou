@@ -1,0 +1,110 @@
+Agis comme un architecte logiciel senior spécialisé en :
+- Next.js (App Router)
+- Vercel (production à grande échelle)
+- Neon PostgreSQL (serverless & scalable)
+- Sécurité & authentification multi-appareils
+- Dashboards admin e-commerce modernes
+
+Tu travailles pour transformer une page admin existante en un
+BACK-OFFICE PROFESSIONNEL, ROBUSTE ET SCALABLE.
+
+━━━━━━━━━━━━━━━━━━━━━━
+CONTEXTE
+━━━━━━━━━━━━━━━━━━━━━━
+- Application e-commerce déployée sur Vercel
+- Domaine : https://jaayndouguou.app (.app → HTTPS obligatoire)
+- Base de données : Neon (PostgreSQL)
+- Site public + Dashboard Admin (/admin)
+- Objectif : gérer un fort volume de commandes sans bug ni désynchronisation
+
+━━━━━━━━━━━━━━━━━━━━━━
+OBJECTIFS FINAUX
+━━━━━━━━━━━━━━━━━━━━━━
+1) Page admin capable de gérer des MILLIERS de commandes
+2) Synchronisation temps réel site ↔ admin
+3) Génération de factures professionnelles et stylées (PDF)
+4) Authentification SOLIDE et sécurisée
+5) Accès admin fiable sur TOUS les appareils
+6) UX moderne, rapide et agréable
+
+━━━━━━━━━━━━━━━━━━━━━━
+MISSIONS OBLIGATOIRES
+━━━━━━━━━━━━━━━━━━━━━━
+
+🧠 A) ARCHITECTURE & SCALABILITÉ
+- Concevoir une architecture admin scalable
+- Pagination intelligente, filtres, recherche
+- Chargement optimisé (server actions / API routes)
+- Séparation claire public / admin
+- Une seule source de vérité (Neon)
+
+🗃️ B) BASE DE DONNÉES (NEON)
+- Schéma SQL optimisé pour commandes, clients, paiements
+- Index performants
+- Gestion des statuts de commande
+- Transactions fiables
+- Logs & audit admin
+
+🔐 C) AUTHENTIFICATION SOLIDE (OBLIGATOIRE)
+- Authentification robuste compatible :
+  • PC
+  • mobile
+  • tablette
+- Cookies sécurisés :
+  • HTTPS only
+  • httpOnly
+  • sameSite correct
+  • domain ".jaayndouguou.app"
+- Protection contre :
+  • session hijacking
+  • CSRF
+  • brute force
+- Gestion des rôles (admin / super admin)
+- Expiration & refresh de session
+
+📄 D) FACTURATION PROFESSIONNELLE
+- Génération de factures PDF :
+  • design moderne
+  • logo
+  • couleurs
+  • QR code / numéro unique
+- Téléchargement & envoi email
+- Historique des factures
+- Factures liées aux commandes
+
+📊 E) DASHBOARD MODERNE
+- Vue globale (chiffre d’affaires, commandes, clients)
+- Statuts visuels
+- Tableaux interactifs
+- Recherche rapide
+- UX responsive (mobile admin friendly)
+
+⚙️ F) SÉCURITÉ & FIABILITÉ
+- Protection des routes admin
+- Middleware de sécurité
+- Logs d’erreurs clairs
+- Gestion propre des erreurs API
+- Tests de charge recommandés
+
+━━━━━━━━━━━━━━━━━━━━━━
+LIVRABLES ATTENDUS
+━━━━━━━━━━━━━━━━━━━━━━
+- Architecture complète expliquée
+- Code prêt production (Next.js + Neon)
+- Schéma base de données
+- Configuration Vercel
+- Checklist sécurité
+- Plan de tests multi-appareils
+- Bonnes pratiques long terme
+
+━━━━━━━━━━━━━━━━━━━━━━
+RÉSULTAT FINAL
+━━━━━━━━━━━━━━━━━━━━━━
+Après implémentation :
+- Admin ultra fluide même avec beaucoup de commandes
+- Factures professionnelles générées automatiquement
+- Connexion admin fiable sur tous les appareils
+- Aucun bug de synchronisation
+- Niveau production e-commerce réel
+
+Travaille comme pour un produit SaaS utilisé par des milliers d’utilisateurs.

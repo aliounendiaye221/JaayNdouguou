@@ -38,7 +38,7 @@ export const metadata: Metadata = {
         address: false,
         telephone: false,
     },
-    metadataBase: new URL('https://www.jaayndougou.sn'),
+    metadataBase: new URL('https://jaayndougou.app'),
     alternates: {
         canonical: '/',
     },
@@ -54,7 +54,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: 'JaayNdougou - Marché Digital de Légumes Frais | Mo Yomb, Mo Gaaw',
         description: 'Commandez vos légumes frais en ligne et faites-vous livrer en 2h à Dakar et Rufisque. Qualité garantie !',
-        url: 'https://www.jaayndougou.sn',
+        url: 'https://jaayndougou.app/',
         siteName: 'JaayNdougou',
         locale: 'fr_SN',
         type: 'website',
@@ -85,7 +85,7 @@ export const metadata: Metadata = {
         },
     },
     verification: {
-        // google: 'your-google-verification-code', // À ajouter après création Google Search Console
+        google: process.env.GOOGLE_SITE_VERIFICATION || undefined,
     },
 };
 
@@ -98,7 +98,7 @@ export default function RootLayout({
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
         "name": "JaayNdougou",
-        "image": "https://www.jaayndougou.sn/hero-vegetables.png",
+        "image": "https://jaayndougou.app/hero-vegetables.png",
         "description": "Marché digital de légumes frais à Dakar et Rufisque",
         "address": {
             "@type": "PostalAddress",

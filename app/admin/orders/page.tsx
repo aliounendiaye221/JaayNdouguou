@@ -70,10 +70,10 @@ export default function OrdersPage() {
         setLoading(true);
         fetchOrders();
         
-        // Rafraîchissement automatique toutes les 5 secondes pour le temps réel
+        // Rafraîchissement automatique toutes les 30 secondes pour préserver la base Neon
         const interval = setInterval(() => {
             fetchOrders();
-        }, 5000);
+        }, 30000);
         
         return () => clearInterval(interval);
     }, [currentPage, filterStatus, searchTerm]);
@@ -147,7 +147,7 @@ export default function OrdersPage() {
                     <p className="text-slate-500 font-medium">Gérez et suivez toutes les transactions en temps réel.</p>
                     {pagination.totalCount > 0 && (
                         <p className="text-sm text-emerald-600 font-bold mt-1">
-                            {pagination.totalCount} commande(s) trouvée(s) · Mise à jour automatique toutes les 5s
+                            {pagination.totalCount} commande(s) trouvée(s) · Mise à jour automatique toutes les 30s
                         </p>
                     )}
                 </div>

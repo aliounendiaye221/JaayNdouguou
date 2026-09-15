@@ -5,7 +5,7 @@
   "installCommand": "npm install",
   "redirects": [
     {
-      "source": "/:path((?!www).*)",
+      "source": "/:path*",
       "has": [
         {
           "type": "host",

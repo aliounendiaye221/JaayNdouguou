@@ -72,10 +72,10 @@ export async function GET() {
         });
 
         const {
-            totalOrders, ordersToday, ordersThisWeek, ordersThisMonth,
-            paidOrders, pendingOrders, deliveringOrders, deliveredOrders, cancelledOrders,
-            totalRevenue, revenueToday, revenueThisWeek, revenueThisMonth
-        } = orderStats;
+            totalOrders = 0, ordersToday = 0, ordersThisWeek = 0, ordersThisMonth = 0,
+            paidOrders = 0, pendingOrders = 0, deliveringOrders = 0, deliveredOrders = 0, cancelledOrders = 0,
+            totalRevenue = 0, revenueToday = 0, revenueThisWeek = 0, revenueThisMonth = 0
+        } = orderStats || {};
 
         // Calcul du taux de conversion
         const conversionRate = totalOrders > 0 ? parseFloat(((paidOrders / totalOrders) * 100).toFixed(1)) : 0;

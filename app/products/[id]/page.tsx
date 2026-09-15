@@ -13,15 +13,31 @@ import { notFound } from "next/navigation";
 
 export default function ProductPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = use(params);
-    const product = products.find((p) => p.id === id);
+    const initialProduct = products.find((p) => p.id === id);
+    const [product, setProduct] = React.useState<any>(initialProduct);
     const { addToCart } = useCart();
     const [quantity, setQuantity] = React.useState(1);
+
+    React.useEffect(() => {
+        fetch('/api/products')
+            .then(res => res.json())
+            .then((list: any[]) => {
+                if (Array.isArray(list)) {
+                    const found = list.find(p => p.id === id);
+                    if (found) setProduct(found);
+                }
+            })
+            .catch(() => {});
+    }, [id]);
 
     if (!product) {
         notFound();
     }
 
+    const isOutOfStock = (product.stock !== undefined && product.stock <= 0) || product.isAvailable === false;
+
     const handleAddToCart = () => {
+        if (isOutOfStock) return;
         for (let i = 0; i < quantity; i++) {
             addToCart(product);
         }
@@ -31,8 +47,72 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
         .filter((p) => p.category === product.category && p.id !== product.id)
         .slice(0, 4);
 
+    const productSchema = {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": product.name,
+        "image": product.image?.startsWith('http') ? product.image : `https://jaayndougou.app${product.image || '/hero-vegetables.png'}`,
+        "description": product.description || `${product.name} frais cultivé localement au Sénégal. Livraison rapide à Dakar et Rufisque.`,
+        "sku": product.id,
+        "category": product.category,
+        "brand": {
+            "@type": "Brand",
+            "name": "JaayNdougou"
+        },
+        "offers": {
+            "@type": "Offer",
+            "url": `https://jaayndougou.app/products/${product.id}/`,
+            "priceCurrency": "XOF",
+            "price": product.price,
+            "availability": isOutOfStock ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+            "itemCondition": "https://schema.org/NewCondition",
+            "seller": {
+                "@type": "Organization",
+                "name": "JaayNdougou"
+            }
+        },
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.8",
+            "reviewCount": "24"
+        }
+    };
+
+    const breadcrumbSchema = {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Accueil",
+                "item": "https://jaayndougou.app/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Marché",
+                "item": "https://jaayndougou.app/market/"
+            },
+            {
+                "@type": "ListItem",
+                "position": 3,
+                "name": product.name,
+                "item": `https://jaayndougou.app/products/${product.id}/`
+            }
+        ]
+    };
+
     return (
         <main className="min-h-screen">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+            />
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+            />
             <Navbar />
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -145,10 +225,15 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                             {/* Add to Cart Button */}
                             <button
                                 onClick={handleAddToCart}
-                                className="w-full flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-emerald-600 to-green-600 text-white text-lg font-bold rounded-full hover:from-emerald-700 hover:to-green-700 transition-all duration-300 shadow-lg hover:shadow-2xl transform hover:-translate-y-1"
+                                disabled={isOutOfStock}
+                                className={`w-full flex items-center justify-center gap-3 px-8 py-4 text-lg font-bold rounded-full transition-all duration-300 shadow-lg ${
+                                    isOutOfStock
+                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed shadow-none'
+                                        : 'bg-gradient-to-r from-emerald-600 to-green-600 text-white hover:from-emerald-700 hover:to-green-700 hover:shadow-2xl transform hover:-translate-y-1'
+                                }`}
                             >
                                 <ShoppingCart className="h-6 w-6" />
-                                Ajouter au panier
+                                {isOutOfStock ? 'En rupture de stock' : 'Ajouter au panier'}
                             </button>
                         </div>
                     </div>

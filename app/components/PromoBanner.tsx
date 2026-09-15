@@ -1,10 +1,26 @@
 "use client";
 
 import { X, Truck } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function PromoBanner() {
     const [isVisible, setIsVisible] = useState(true);
+    const [message, setMessage] = useState("🎉 Livraison GRATUITE pour toute commande supérieure à 10 000 FCFA");
+
+    useEffect(() => {
+        fetch('/api/settings')
+            .then(res => res.json())
+            .then(data => {
+                if (data) {
+                    if (data.announcementMessage) {
+                        setMessage(data.announcementMessage);
+                    } else if (data.freeDeliveryThreshold) {
+                        setMessage(`🎉 Livraison GRATUITE pour toute commande supérieure à ${data.freeDeliveryThreshold.toLocaleString()} FCFA`);
+                    }
+                }
+            })
+            .catch(() => {});
+    }, []);
 
     if (!isVisible) return null;
 
@@ -17,8 +33,7 @@ export default function PromoBanner() {
                             <Truck className="h-5 w-5" />
                         </span>
                         <p className="ml-3 font-medium text-sm sm:text-base">
-                            <span className="hidden sm:inline">🎉 Livraison GRATUITE pour toute commande supérieure à 10,000 FCFA</span>
-                            <span className="sm:hidden">Livraison GRATUITE +10K FCFA</span>
+                            <span>{message}</span>
                         </p>
                     </div>
                     <button

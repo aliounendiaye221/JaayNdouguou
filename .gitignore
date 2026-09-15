@@ -46,8 +46,15 @@ yarn-error.log*
 tmp/credentials-*.md
 
 # Secrets (ne jamais commiter)
-VERCEL_SECRETS.txt
+VERCEL_*.txt
 *.secrets.txt
+*.secrets.*
+CREDENTIALS_*.md
+CONFIGURATION_VERCEL_*.md
+build_log.txt
+errors.txt
+*.old
+test-login.html
 
 # vercel
 .vercel

@@ -1,11 +1,15 @@
-# https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Allow: /
-
-# Sitemap
-Sitemap: https://www.jaayndougou.sn/sitemap.xml
-
-# Disallow admin pages
-User-agent: *
+Allow: /api/products
+Allow: /api/settings
 Disallow: /admin/
-Disallow: /api/
+Disallow: /api/admin/
+Disallow: /api/orders
+Disallow: /api/auth/
+Disallow: /cart/
+Disallow: /checkout/
+
+# Host & Sitemap
+Host: https://jaayndougou.app
+Sitemap: https://jaayndougou.app/sitemap.xml
+

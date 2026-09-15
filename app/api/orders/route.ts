@@ -8,6 +8,7 @@ import {
 import { z } from 'zod';
 import { auth } from '@/auth';
 import { products as catalogProducts } from '@/app/data/products';
+import { getStoreConfig, ensureProductsInitialized } from '@/app/utils/storeConfig';
 
 // Force pas de cache pour les commandes
 export const dynamic = 'force-dynamic';
@@ -34,59 +35,136 @@ async function retryOperation<T>(
     throw lastError;
 }
 
-// Validation schema
+// Schéma de validation de la commande
 const orderSchema = z.object({
     customerInfo: z.object({
-        firstName: z.string().min(1),
-        lastName: z.string().min(1),
-        email: z.string().email(),
-        phone: z.string().min(8),
+        firstName: z.string().min(1, 'Le prénom est requis'),
+        lastName: z.string().min(1, 'Le nom est requis'),
+        email: z.string().email('Email invalide').optional().or(z.literal('')),
+        phone: z.string().min(8, 'Numéro de téléphone requis'),
     }),
     deliveryInfo: z.object({
-        address: z.string().min(5),
-        city: z.string().min(2),
-        phone: z.string().min(8),
-        notes: z.string().optional(),
+        address: z.string().min(3, 'L\'adresse de livraison est requise'),
+        city: z.string().min(2, 'La ville est requise'),
+        phone: z.string().min(8, 'Le téléphone de livraison est requis'),
+        notes: z.string().optional().nullable(),
     }),
     items: z.array(
         z.object({
-            productId: z.string(),
-            name: z.string(),
-            quantity: z.number().positive(),
-            price: z.number().positive(),
-            unit: z.string(),
+            productId: z.string().min(1),
+            quantity: z.number().int().positive('La quantité doit être supérieure à 0'),
+            // Les champs suivants sont informatifs depuis le client,
+            // les prix officiels et noms sont TOUJOURS résolus côté serveur
+            name: z.string().optional(),
+            price: z.number().optional(),
+            unit: z.string().optional(),
         })
-    ).min(1),
+    ).min(1, 'Votre panier est vide'),
     paymentMethod: z.enum(['cod', 'wave', 'orange-money']),
 });
 
 export async function POST(request: NextRequest) {
     const requestId = `ORD-${Date.now().toString(36)}`;
-    
-    // Log de traçabilité DB au début de chaque requête
     const dbInfo = getDbInfo();
     console.log(`📥 [PUBLIC/ORDERS] ${requestId} - Nouvelle commande`);
-    console.log(`🔌 [PUBLIC/ORDERS] ${requestId} - DB: ${dbInfo.main?.host} (${dbInfo.vercelEnv})`);
-    
+
     try {
         const body = await request.json();
-
-        // Validate request body
         const validatedData = orderSchema.parse(body);
         const { customerInfo, items, paymentMethod, deliveryInfo } = validatedData;
 
-        // Calculate totals
-        const subtotal = items.reduce(
+        // 1. Initialiser les produits en base si nécessaire
+        await ensureProductsInitialized();
+
+        // 2. Récupérer les paramètres de la boutique (frais livraison, seuil, état boutique)
+        const storeConfig = await getStoreConfig();
+        if (!storeConfig.storeOpen) {
+            return NextResponse.json(
+                { error: 'La boutique est actuellement fermée pour maintenance ou inventaire. Veuillez réessayer plus tard.' },
+                { status: 403 }
+            );
+        }
+
+        // 3. Validation stricte des produits, des prix et des stocks CÔTÉ SERVEUR
+        const validatedItems: Array<{
+            productId: string;
+            name: string;
+            unit: string;
+            price: number;
+            quantity: number;
+            dbProduct: any;
+        }> = [];
+
+        for (const item of items) {
+            // Recherche en base de données
+            let product = await prisma.product.findUnique({
+                where: { id: item.productId },
+            });
+
+            // Repli vers le catalogue statique si le produit n'a pas encore été migré
+            if (!product) {
+                const catalogProd = catalogProducts.find(p => p.id === item.productId);
+                if (catalogProd) {
+                    product = await prisma.product.create({
+                        data: {
+                            id: catalogProd.id,
+                            name: catalogProd.name,
+                            price: catalogProd.price,
+                            unit: catalogProd.unit,
+                            image: catalogProd.image || '',
+                            category: catalogProd.category || 'Général',
+                            description: catalogProd.description || '',
+                            stock: 100,
+                            isAvailable: true,
+                        },
+                    });
+                }
+            }
+
+            if (!product) {
+                return NextResponse.json(
+                    { error: `Le produit sélectionné (${item.productId}) n'existe plus au catalogue.` },
+                    { status: 400 }
+                );
+            }
+
+            if (!product.isAvailable) {
+                return NextResponse.json(
+                    { error: `Le produit "${product.name}" est actuellement indisponible.` },
+                    { status: 400 }
+                );
+            }
+
+            if (product.stock < item.quantity) {
+                return NextResponse.json(
+                    { error: `Stock insuffisant pour "${product.name}". Seulement ${product.stock} ${product.unit} disponible(s).` },
+                    { status: 400 }
+                );
+            }
+
+            // PRIX OFFICIEL CERTIFIÉ SERVEUR (Protection anti-falsification)
+            validatedItems.push({
+                productId: product.id,
+                name: product.name,
+                unit: product.unit,
+                price: product.price,
+                quantity: item.quantity,
+                dbProduct: product,
+            });
+        }
+
+        // 4. Calcul authentifié des montants
+        const subtotal = validatedItems.reduce(
             (acc, item) => acc + item.price * item.quantity,
             0
         );
-        const deliveryFee = subtotal >= 10000 ? 0 : 1500; // Free delivery over 10,000 FCFA
+        const deliveryFee = subtotal >= storeConfig.freeDeliveryThreshold ? 0 : storeConfig.deliveryFee;
         const total = subtotal + deliveryFee;
 
-        // Generate order number
+        // 5. Générer le numéro de commande
         const orderNumber = `JN-${Date.now()}-${Math.random().toString(36).substring(7).toUpperCase()}`;
 
-        // Handle payment processing
+        // 6. Gestion du paiement
         let paymentId: string | undefined;
         let paymentStatus = 'pending';
 
@@ -101,22 +179,10 @@ export async function POST(request: NextRequest) {
 
             if (waveResult.success) {
                 paymentId = waveResult.transactionId;
-                // If NO API KEY (Manual Mode), keep status PENDING for verification
-                if (!process.env.WAVE_API_KEY) {
-                    paymentStatus = 'pending';
-                } else if (process.env.NODE_ENV !== 'production') {
-                    // Dev simulation with keys? mark paid. 
-                    // But usually dev doesn't have keys. 
-                    // Let's assume without keys = manual transfer = pending
-                    paymentStatus = 'pending';
-                } else {
-                    // Production with keys, and success returned -> likely initiated, wait for webhook
-                    // But initiation success doesn't mean paid yet.
-                    paymentStatus = 'pending';
-                }
+                paymentStatus = 'pending';
             } else {
                 return NextResponse.json(
-                    { error: 'Payment initiation failed', details: waveResult.error },
+                    { error: 'Échec de l\'initialisation du paiement Wave', details: waveResult.error },
                     { status: 400 }
                 );
             }
@@ -131,64 +197,72 @@ export async function POST(request: NextRequest) {
 
             if (omResult.success) {
                 paymentId = omResult.transactionId;
-                // Manual mode: Pending verification
-                if (!process.env.ORANGE_MONEY_API_KEY) {
-                    paymentStatus = 'pending';
-                }
+                paymentStatus = 'pending';
             } else {
                 return NextResponse.json(
-                    { error: 'Payment initiation failed', details: omResult.error },
+                    { error: 'Échec de l\'initialisation du paiement Orange Money', details: omResult.error },
                     { status: 400 }
                 );
             }
-        } else {
-            // Cash on delivery
-            paymentStatus = 'pending';
         }
 
-        // Sauvegarder en base de données avec retry automatique
-        let order;
-        let dbError = null;
-        
-        try {
-            order = await retryOperation(async () => {
-                // Create or find customer
-                let customer = await prisma.customer.findUnique({
-                    where: { email: customerInfo.email },
+        // Nettoyage et formatage du téléphone
+        const cleanPhone = customerInfo.phone.replace(/\s+/g, '');
+        // Email client : réel si fourni, sinon identifiant interne propre
+        const isRealEmail = customerInfo.email &&
+            !customerInfo.email.endsWith('.local') &&
+            !customerInfo.email.endsWith('@jaayndougou.sn') &&
+            customerInfo.email.includes('@');
+
+        const customerEmail = isRealEmail
+            ? customerInfo.email!.trim().toLowerCase()
+            : `${cleanPhone}@client.local`;
+
+        // 7. Sauvegarder la commande et décrémenter le stock dans une transaction avec retry
+        const newOrder = await retryOperation(async () => {
+            // Trouver ou créer le client
+            let customer = await prisma.customer.findUnique({
+                where: { email: customerEmail },
+            });
+
+            if (!customer) {
+                // Tentative par téléphone si présent
+                const existingByPhone = await prisma.customer.findFirst({
+                    where: { phone: cleanPhone },
                 });
 
-                if (!customer) {
+                if (existingByPhone) {
+                    customer = existingByPhone;
+                } else {
                     customer = await prisma.customer.create({
                         data: {
                             firstName: customerInfo.firstName,
                             lastName: customerInfo.lastName,
-                            email: customerInfo.email,
-                            phone: customerInfo.phone,
+                            email: customerEmail,
+                            phone: cleanPhone,
                             address: deliveryInfo.address,
                             city: deliveryInfo.city,
                         },
                     });
                 }
+            }
 
-                // S'assurer que les produits existent en base (upsert depuis le catalogue statique)
-                for (const item of items) {
-                    const catalogProduct = catalogProducts.find(p => p.id === item.productId);
-                    await prisma.product.upsert({
+            // Transaction Prisma : Décrémenter le stock de chaque produit et enregistrer la commande
+            return await prisma.$transaction(async (tx) => {
+                // Décrémenter les stocks
+                for (const item of validatedItems) {
+                    await tx.product.update({
                         where: { id: item.productId },
-                        update: { price: item.price },
-                        create: {
-                            id: item.productId,
-                            name: item.name,
-                            price: item.price,
-                            unit: item.unit,
-                            image: catalogProduct?.image || '',
-                            category: catalogProduct?.category || 'Général',
-                            description: catalogProduct?.description || '',
+                        data: {
+                            stock: {
+                                decrement: item.quantity,
+                            },
                         },
                     });
                 }
 
-                const newOrder = await prisma.order.create({
+                // Créer la commande
+                const createdOrder = await tx.order.create({
                     data: {
                         orderNumber,
                         customerId: customer.id,
@@ -203,78 +277,78 @@ export async function POST(request: NextRequest) {
                         deliveryFee,
                         total,
                         items: {
-                            create: items.map((item) => ({
+                            create: validatedItems.map((item) => ({
                                 productId: item.productId,
                                 quantity: item.quantity,
-                                price: item.price,
+                                price: item.price, // Prix vérifié serveur
                             })),
                         },
                     },
                     include: {
-                        items: true,
+                        items: {
+                            include: {
+                                product: true,
+                            },
+                        },
                     },
                 });
-                
-                return newOrder;
-            }, 3, 1000); // 3 tentatives avec délai exponentiel
-            
-            console.log(`✅ [PUBLIC/ORDERS] ${requestId} - Commande ${orderNumber} enregistrée avec succès`);
-            console.log(`📊 [PUBLIC/ORDERS] ${requestId} - DB: ${dbInfo.main?.host} | Total: ${total} FCFA`);
-            
-        } catch (error) {
-            console.error(`❌ [PUBLIC/ORDERS] ${requestId} - ERREUR CRITIQUE:`, error);
-            dbError = error;
-            
-            // En cas d'échec critique, on retourne une erreur 500
-            return NextResponse.json({
-                error: 'Impossible d\'enregistrer la commande',
-                details: 'Le serveur rencontre des difficultés. Veuillez réessayer dans quelques instants.',
-                orderNumber,
-            }, { status: 500 });
-        }
 
-        // Envoyer l'email de confirmation (ne pas bloquer si ça échoue)
-        try {
-            await sendOrderConfirmationEmail(customerInfo.email, {
-                customerName: `${customerInfo.firstName} ${customerInfo.lastName}`,
-                orderNumber: orderNumber,
-                orderItems: items,
-                subtotal,
-                deliveryFee,
-                total,
-                deliveryAddress: `${deliveryInfo.address}, ${deliveryInfo.city}`,
-                paymentMethod,
+                return createdOrder;
             });
-        } catch (emailError) {
-            console.warn('⚠️ L\'email de confirmation n\'a pas pu être envoyé:', emailError);
-            // On continue quand même, l'email n'est pas critique
+        }, 3, 1000);
+
+        console.log(`✅ [PUBLIC/ORDERS] ${requestId} - Commande ${orderNumber} créée (${total} FCFA)`);
+
+        // 8. Envoi de l'email de confirmation UNIQUEMENT si une véritable adresse email a été fournie
+        if (isRealEmail && customerInfo.email) {
+            try {
+                await sendOrderConfirmationEmail(customerInfo.email, {
+                    customerName: `${customerInfo.firstName} ${customerInfo.lastName}`,
+                    orderNumber: orderNumber,
+                    orderItems: validatedItems.map(i => ({
+                        name: i.name,
+                        quantity: i.quantity,
+                        price: i.price,
+                        unit: i.unit,
+                    })),
+                    subtotal,
+                    deliveryFee,
+                    total,
+                    deliveryAddress: `${deliveryInfo.address}, ${deliveryInfo.city}`,
+                    paymentMethod,
+                });
+            } catch (emailError) {
+                console.warn('⚠️ L\'email de confirmation n\'a pas pu être envoyé:', emailError);
+            }
         }
 
-        // Retourne la réponse de succès seulement si la commande est bien enregistrée
         return NextResponse.json({
             success: true,
             order: {
-                id: order.id,
-                orderNumber: orderNumber,
-                total: total,
-                status: order.status,
-                paymentStatus: order.paymentStatus,
-                createdAt: order.createdAt,
+                id: newOrder.id,
+                orderNumber: newOrder.orderNumber,
+                subtotal: newOrder.subtotal,
+                deliveryFee: newOrder.deliveryFee,
+                total: newOrder.total,
+                status: newOrder.status,
+                paymentStatus: newOrder.paymentStatus,
+                createdAt: newOrder.createdAt,
             },
-            message: 'Commande enregistrée avec succès ✅'
+            message: 'Commande enregistrée avec succès ✅',
         });
+
     } catch (error) {
         console.error('Error creating order:', error);
 
         if (error instanceof z.ZodError) {
             return NextResponse.json(
-                { error: 'Validation error', details: error.issues },
+                { error: 'Données de commande invalides', details: error.issues },
                 { status: 400 }
             );
         }
 
         return NextResponse.json(
-            { error: 'Failed to create order' },
+            { error: error instanceof Error ? error.message : 'Échec de l\'enregistrement de la commande' },
             { status: 500 }
         );
     }
@@ -284,16 +358,25 @@ export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
         const orderNumber = searchParams.get('orderNumber');
+        const session = await auth();
 
         if (orderNumber) {
-            // Get specific order
+            // Consultation d'une commande spécifique
             const order = await prisma.order.findUnique({
                 where: { orderNumber },
                 include: {
                     customer: true,
                     items: {
                         include: {
-                            product: true,
+                            product: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    price: true,
+                                    unit: true,
+                                    image: true,
+                                },
+                            },
                         },
                     },
                 },
@@ -301,17 +384,43 @@ export async function GET(request: NextRequest) {
 
             if (!order) {
                 return NextResponse.json(
-                    { error: 'Order not found' },
+                    { error: 'Commande introuvable' },
                     { status: 404 }
                 );
             }
 
-            return NextResponse.json({ order });
+            // Si l'utilisateur est admin authentifié, retourner tous les détails
+            if (session) {
+                return NextResponse.json({ order });
+            }
+
+            // PROTECTION PII (Données Personnelles) :
+            // Pour les visiteurs publics (suivi de commande), ne pas exposer le téléphone, l'adresse exacte ni l'email
+            const safeOrder = {
+                orderNumber: order.orderNumber,
+                status: order.status,
+                paymentStatus: order.paymentStatus,
+                paymentMethod: order.paymentMethod,
+                subtotal: order.subtotal,
+                deliveryFee: order.deliveryFee,
+                total: order.total,
+                createdAt: order.createdAt,
+                customer: {
+                    firstName: order.customer.firstName,
+                },
+                items: order.items.map(item => ({
+                    id: item.id,
+                    product: item.product,
+                    quantity: item.quantity,
+                    price: item.price,
+                })),
+            };
+
+            return NextResponse.json({ order: safeOrder });
         } else {
-            // Get all orders (admin functionality) - Protect this!
-            const session = await auth();
+            // Liste complète des commandes : réservée aux administrateurs authentifiés
             if (!session) {
-                return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+                return NextResponse.json({ error: 'Non autorisé' }, { status: 401 });
             }
 
             const orders = await prisma.order.findMany({
@@ -332,7 +441,7 @@ export async function GET(request: NextRequest) {
     } catch (error) {
         console.error('Error fetching orders:', error);
         return NextResponse.json(
-            { error: 'Failed to fetch orders' },
+            { error: 'Échec de la récupération des commandes' },
             { status: 500 }
         );
     }

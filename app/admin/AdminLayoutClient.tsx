@@ -5,6 +5,8 @@ import {
     LayoutDashboard,
     ShoppingBag,
     AlertCircle,
+    Package,
+    Settings,
     LogOut,
     Menu,
     Bell,
@@ -20,7 +22,9 @@ export default function AdminLayoutClient({ children }: { children: React.ReactN
     const navigation = [
         { name: "Tableau de bord", href: "/admin/dashboard", icon: LayoutDashboard },
         { name: "Commandes", href: "/admin/orders", icon: ShoppingBag },
+        { name: "Produits & Stocks", href: "/admin/products", icon: Package },
         { name: "Réclamations", href: "/admin/claims", icon: AlertCircle },
+        { name: "Paramètres Boutique", href: "/admin/settings", icon: Settings },
     ];
 
     return (

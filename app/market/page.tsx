@@ -1,20 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import ProductCard from "../components/ProductCard";
 import Footer from "../components/Footer";
 import { Search, Filter, SlidersHorizontal } from "lucide-react";
 
-import { products } from "../data/products";
+import { products as initialProducts } from "../data/products";
 
 const categories = ["Tout", "Légumes", "Tubercules", "Fruits"];
 
 export default function Market() {
+    const [productList, setProductList] = useState(initialProducts);
     const [activeCategory, setActiveCategory] = useState("Tout");
     const [searchTerm, setSearchTerm] = useState("");
 
-    const filteredProducts = products.filter(product => {
+    useEffect(() => {
+        fetch('/api/products')
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data) && data.length > 0) {
+                    setProductList(data);
+                }
+            })
+            .catch(() => {});
+    }, []);
+
+    const filteredProducts = productList.filter(product => {
         const matchesCategory = activeCategory === "Tout" || product.category === activeCategory;
         const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesCategory && matchesSearch;

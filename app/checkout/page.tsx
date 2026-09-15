@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Truck, CreditCard, CheckCircle, MapPin, Phone, User } from "lucide-react";
+import { ArrowLeft, Truck, CreditCard, CheckCircle, MapPin, Phone, User, Mail, AlertTriangle } from "lucide-react";
 import Navbar from "../components/Navbar";
 import { useCart } from "../context/CartContext";
 
@@ -15,11 +15,33 @@ export default function Checkout() {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
+    email: "",
     phone: "",
     address: "",
     city: "Dakar",
     notes: ""
   });
+
+  const [storeSettings, setStoreSettings] = useState({
+    deliveryFee: 1500,
+    freeDeliveryThreshold: 10000,
+    storeOpen: true,
+  });
+
+  useEffect(() => {
+    fetch('/api/settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data) {
+          setStoreSettings({
+            deliveryFee: data.deliveryFee ?? 1500,
+            freeDeliveryThreshold: data.freeDeliveryThreshold ?? 10000,
+            storeOpen: data.storeOpen ?? true,
+          });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const [paymentMethod, setPaymentMethod] = useState("cod"); // cod, wave, orange-money
 
@@ -36,9 +58,9 @@ export default function Checkout() {
       const cleanPhone = formData.phone.replace(/\s+/g, '');
       const orderData = {
         customerInfo: {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: `${cleanPhone}@jaayndougou.sn`, // Temporary email using cleaned phone
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          email: formData.email.trim() ? formData.email.trim() : `${cleanPhone}@client.local`,
           phone: cleanPhone,
         },
         deliveryInfo: {
@@ -106,7 +128,7 @@ export default function Checkout() {
     );
   }
 
-  const deliveryFee = total >= 10000 ? 0 : 1500;
+  const deliveryFee = total >= storeSettings.freeDeliveryThreshold ? 0 : storeSettings.deliveryFee;
   const finalTotal = total + deliveryFee;
 
   return (
@@ -172,7 +194,7 @@ export default function Checkout() {
                     </div>
                   </div>
 
-                  <div className="sm:col-span-2">
+                  <div>
                     <label htmlFor="phone" className="block text-sm font-bold text-gray-700 mb-2">Téléphone</label>
                     <div className="relative">
                       <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -185,6 +207,24 @@ export default function Checkout() {
                         onChange={handleInputChange}
                         className="block w-full pl-10 border-gray-300 rounded-xl shadow-sm focus:ring-emerald-500 focus:border-emerald-500 py-3"
                         placeholder="77 123 45 67"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-bold text-gray-700 mb-2">
+                      Email <span className="text-xs font-normal text-gray-400">(facultatif, pour la facture)</span>
+                    </label>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleInputChange}
+                        className="block w-full pl-10 border-gray-300 rounded-xl shadow-sm focus:ring-emerald-500 focus:border-emerald-500 py-3"
+                        placeholder="votre.email@exemple.com"
                       />
                     </div>
                   </div>
@@ -305,21 +345,28 @@ export default function Checkout() {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={isProcessing}
-                className="w-full flex justify-center py-4 px-6 border border-transparent rounded-xl shadow-lg text-lg font-bold text-white bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-1 transition-all duration-300"
-              >
-                {isProcessing ? (
-                  <span className="flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Traitement...
-                  </span>
-                ) : (
-                  `Commander (${finalTotal} FCFA)`
+                {!storeSettings.storeOpen && (
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-800 text-sm font-bold">
+                    <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                    <span>La boutique est actuellement fermée pour réapprovisionnement. Les commandes en ligne sont temporairement suspendues.</span>
+                  </div>
                 )}
-              </button>
-            </form>
+
+                <button
+                  type="submit"
+                  disabled={isProcessing || !storeSettings.storeOpen}
+                  className="w-full flex justify-center py-4 px-6 border border-transparent rounded-xl shadow-lg text-lg font-bold text-white bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed transform hover:-translate-y-1 transition-all duration-300"
+                >
+                  {isProcessing ? (
+                    <span className="flex items-center gap-2">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Traitement...
+                    </span>
+                  ) : (
+                    `Commander (${finalTotal} FCFA)`
+                  )}
+                </button>
+              </form>
           </div>
 
           {/* Order Summary */}
