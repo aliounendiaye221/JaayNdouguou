@@ -1,6 +1,6 @@
 "use client";
 
-import { memo } from 'react';
+import { memo, useState, useEffect } from 'react';
 import Image from "next/image";
 import Link from "next/link";
 import { Plus, ShoppingBag } from "lucide-react";
@@ -18,18 +18,41 @@ export interface Product {
 
 function ProductCard({ product, priority = false }: { product: Product, priority?: boolean }) {
     const { addToCart } = useCart();
+    
+    // Normalisation du chemin de l'image
+    const getInitialImage = (img?: string) => {
+        if (!img || img.trim() === '' || img === '/placeholder.png') return '/hero-vegetables.png';
+        return img.startsWith('/') || img.startsWith('http') ? img : `/${img}`;
+    };
+
+    const [imgSrc, setImgSrc] = useState(getInitialImage(product.image));
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        setImgSrc(getInitialImage(product.image));
+        setIsLoading(true);
+    }, [product.image]);
 
     return (
         <div className="glass-card rounded-2xl overflow-hidden group relative transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl h-full flex flex-col">
             {/* Image Container */}
-            <div className="relative aspect-square overflow-hidden bg-gray-50">
+            <div className="relative aspect-square overflow-hidden bg-emerald-50/40">
+                {isLoading && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 via-slate-100 to-emerald-50 animate-pulse z-0" />
+                )}
                 <Image
-                    src={product.image}
+                    src={imgSrc}
                     alt={product.name}
                     fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 280px"
+                    quality={80}
                     priority={priority}
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    className={`object-cover transition-all duration-500 group-hover:scale-110 z-10 ${isLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
+                    onLoad={() => setIsLoading(false)}
+                    onError={() => {
+                        setImgSrc('/hero-vegetables.png');
+                        setIsLoading(false);
+                    }}
                 />
 
                 {/* Overlay Gradient */}

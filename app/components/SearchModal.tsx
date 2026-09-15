@@ -81,11 +81,14 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                                         onClick={onClose}
                                         className="flex items-center gap-4 p-3 rounded-xl hover:bg-gray-50 transition-all group"
                                     >
-                                        <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                                        <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-emerald-50/50 flex-shrink-0">
                                             <Image
-                                                src={product.image}
+                                                src={product.image && product.image.trim() !== '' 
+                                                    ? (product.image.startsWith('/') || product.image.startsWith('http') ? product.image : `/${product.image}`) 
+                                                    : '/hero-vegetables.png'}
                                                 alt={product.name}
                                                 fill
+                                                sizes="64px"
                                                 className="object-cover group-hover:scale-110 transition-transform duration-300"
                                             />
                                         </div>

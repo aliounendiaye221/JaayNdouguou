@@ -1,5 +1,7 @@
+"use client";
+
 import Image, { ImageProps } from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'onLoad'> {
   fallback?: string;
@@ -8,12 +10,17 @@ interface OptimizedImageProps extends Omit<ImageProps, 'onLoad'> {
 export default function OptimizedImage({ 
   src, 
   alt, 
-  fallback = '/placeholder.png',
+  fallback = '/hero-vegetables.png',
   className,
   ...props 
 }: OptimizedImageProps) {
   const [imgSrc, setImgSrc] = useState(src);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setImgSrc(src);
+    setIsLoading(true);
+  }, [src]);
 
   return (
     <div className="relative">

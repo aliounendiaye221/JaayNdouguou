@@ -33,6 +33,11 @@ interface ProductItem {
     description?: string | null;
 }
 
+const getSafeProductImage = (img?: string) => {
+    if (!img || img.trim() === '' || img === '/placeholder.png' || img === '/logo.png') return '/hero-vegetables.png';
+    return img.startsWith('/') || img.startsWith('http') ? img : `/${img}`;
+};
+
 export default function AdminProductsPage() {
     const router = useRouter();
     const [products, setProducts] = useState<ProductItem[]>([]);
@@ -444,9 +449,10 @@ export default function AdminProductsPage() {
                                             <div className="flex items-center gap-3">
                                                 <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden relative flex-shrink-0 border border-slate-200">
                                                     <Image
-                                                        src={product.image || '/logo.png'}
+                                                        src={getSafeProductImage(product.image)}
                                                         alt={product.name}
                                                         fill
+                                                        sizes="48px"
                                                         className="object-cover"
                                                     />
                                                 </div>
@@ -603,9 +609,10 @@ export default function AdminProductsPage() {
                                     <div className="flex items-start gap-3">
                                         <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden relative flex-shrink-0 border border-slate-200">
                                             <Image
-                                                src={product.image || '/logo.png'}
+                                                src={getSafeProductImage(product.image)}
                                                 alt={product.name}
                                                 fill
+                                                sizes="48px"
                                                 className="object-cover"
                                             />
                                         </div>
@@ -820,6 +827,44 @@ export default function AdminProductsPage() {
                                         className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-emerald-500"
                                         placeholder="/oignon.png"
                                     />
+                                    <div className="mt-2 flex flex-wrap gap-1.5 max-h-24 overflow-y-auto p-1.5 bg-slate-50 rounded-xl border border-slate-100">
+                                        {[
+                                            { label: 'Oignon', path: '/oignon.png' },
+                                            { label: 'Pomme de terre', path: '/pomme-terre.png' },
+                                            { label: 'Carotte', path: '/carotte.png' },
+                                            { label: 'Tomate', path: '/tomate.png' },
+                                            { label: 'Chou', path: '/chou-pomme.png' },
+                                            { label: 'Poivron', path: '/poivron-vert.png' },
+                                            { label: 'Aubergine', path: '/aubergine.png' },
+                                            { label: 'Concombre', path: '/concombre.png' },
+                                            { label: 'Haricot', path: '/haricot_vert.png' },
+                                            { label: 'Laitue', path: '/laitue.png' },
+                                            { label: 'Betterave', path: '/betterave.png' },
+                                            { label: 'Navet', path: '/navet.png' },
+                                            { label: 'Persil', path: '/persil_frais.png' },
+                                            { label: 'Menthe', path: '/menthe_fraiche.png' },
+                                            { label: 'Piment', path: '/piment_fort.png' },
+                                            { label: 'Ail', path: '/ail.png' },
+                                            { label: 'Gingembre', path: '/gingembre.png' },
+                                            { label: 'Pomme', path: '/pomme.png' },
+                                            { label: 'Banane', path: '/banane.png' },
+                                            { label: 'Orange', path: '/orange.png' },
+                                            { label: 'Mangue', path: '/mangue.png' },
+                                        ].map(preset => (
+                                            <button
+                                                key={preset.path}
+                                                type="button"
+                                                onClick={() => setModalForm(prev => ({ ...prev, image: preset.path }))}
+                                                className={`text-[10px] px-2 py-0.5 rounded-lg border font-bold transition-colors ${
+                                                    modalForm.image === preset.path 
+                                                        ? 'bg-emerald-600 text-white border-emerald-600' 
+                                                        : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-100'
+                                                }`}
+                                            >
+                                                {preset.label}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 

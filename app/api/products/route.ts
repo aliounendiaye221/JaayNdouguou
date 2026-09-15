@@ -23,7 +23,24 @@ export async function GET() {
             ],
         });
 
-        const products = dbProducts.length > 0 ? dbProducts : fallbackProducts;
+        const rawProducts = dbProducts.length > 0 ? dbProducts : fallbackProducts;
+
+        // Garantir que chaque produit renvoyé dispose d'une image valide et nette
+        const products = rawProducts.map(p => {
+            const catalogItem = fallbackProducts.find(cat => cat.id === p.id);
+            let image = p.image;
+            if (!image || image.trim() === '' || image === '/logo.png') {
+                image = catalogItem?.image || '/hero-vegetables.png';
+            }
+            if (!image.startsWith('/') && !image.startsWith('http')) {
+                image = `/${image}`;
+            }
+            return {
+                ...p,
+                image,
+            };
+        });
+
         const response = NextResponse.json(products);
 
         // TEMPS RÉEL : Aucun cache pour refléter instantanément les modifications de prix et stocks

@@ -18,6 +18,16 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     const [allProducts, setAllProducts] = React.useState<any[]>(products);
     const { addToCart } = useCart();
     const [quantity, setQuantity] = React.useState(1);
+    const [imgSrc, setImgSrc] = React.useState(product?.image || '/hero-vegetables.png');
+    const [isImgLoading, setIsImgLoading] = React.useState(true);
+
+    React.useEffect(() => {
+        if (product?.image) {
+            const clean = product.image.startsWith('/') || product.image.startsWith('http') ? product.image : `/${product.image}`;
+            setImgSrc(clean);
+            setIsImgLoading(true);
+        }
+    }, [product?.image]);
 
     React.useEffect(() => {
         fetch(`/api/products?t=${Date.now()}`, { cache: 'no-store' })
@@ -128,13 +138,23 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
 
                 <div className="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden">
                     <div className="lg:grid lg:grid-cols-2 lg:gap-x-8">
-                        {/* Product Image */}
-                        <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 overflow-hidden relative group">
+                        <div className="aspect-square bg-gradient-to-br from-emerald-50/40 to-gray-100 overflow-hidden relative group">
+                            {isImgLoading && (
+                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 via-slate-100 to-emerald-50 animate-pulse z-0" />
+                            )}
                             <Image
-                                src={product.image}
+                                src={imgSrc}
                                 alt={product.name}
                                 fill
-                                className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                                sizes="(max-width: 1024px) 100vw, 600px"
+                                quality={85}
+                                priority
+                                className={`object-cover object-center group-hover:scale-105 transition-all duration-500 z-10 ${isImgLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
+                                onLoad={() => setIsImgLoading(false)}
+                                onError={() => {
+                                    setImgSrc('/hero-vegetables.png');
+                                    setIsImgLoading(false);
+                                }}
                             />
                             {/* Category Badge */}
                             <div className="absolute top-6 left-6 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg">
