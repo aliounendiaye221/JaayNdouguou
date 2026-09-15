@@ -18,7 +18,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
     const [allProducts, setAllProducts] = React.useState<any[]>(products);
     const { addToCart } = useCart();
     const [quantity, setQuantity] = React.useState(1);
-    const [imgSrc, setImgSrc] = React.useState(product?.image || '/hero-vegetables.png');
+    const [imgSrc, setImgSrc] = React.useState(product?.image || '/logo.png');
     const [isImgLoading, setIsImgLoading] = React.useState(true);
 
     React.useEffect(() => {
@@ -152,7 +152,7 @@ export default function ProductPage({ params }: { params: Promise<{ id: string }
                                 className={`object-cover object-center group-hover:scale-105 transition-all duration-500 z-10 ${isImgLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
                                 onLoad={() => setIsImgLoading(false)}
                                 onError={() => {
-                                    setImgSrc('/hero-vegetables.png');
+                                    setImgSrc(product.image || '/logo.png');
                                     setIsImgLoading(false);
                                 }}
                             />

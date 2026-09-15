@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Plus, ShoppingBag } from "lucide-react";
 import { useCart } from "../context/CartContext";
+import { products as catalogProducts } from "../data/products";
 
 export interface Product {
     id: string;
@@ -19,19 +20,22 @@ export interface Product {
 function ProductCard({ product, priority = false }: { product: Product, priority?: boolean }) {
     const { addToCart } = useCart();
     
-    // Normalisation du chemin de l'image
-    const getInitialImage = (img?: string) => {
-        if (!img || img.trim() === '' || img === '/placeholder.png') return '/hero-vegetables.png';
-        return img.startsWith('/') || img.startsWith('http') ? img : `/${img}`;
+    // Récupération de l'image propre au produit (ou fallback sur son image de catalogue dédiée)
+    const getInitialImage = (img?: string, id?: string) => {
+        if (img && img.trim() !== '' && img !== '/placeholder.png' && img !== '/hero-vegetables.png') {
+            return img.startsWith('/') || img.startsWith('http') ? img : `/${img}`;
+        }
+        const fallback = catalogProducts.find(c => c.id === id);
+        return fallback?.image || '/logo.png';
     };
 
-    const [imgSrc, setImgSrc] = useState(getInitialImage(product.image));
+    const [imgSrc, setImgSrc] = useState(getInitialImage(product.image, product.id));
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        setImgSrc(getInitialImage(product.image));
+        setImgSrc(getInitialImage(product.image, product.id));
         setIsLoading(true);
-    }, [product.image]);
+    }, [product.image, product.id]);
 
     return (
         <div className="glass-card rounded-2xl overflow-hidden group relative transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl h-full flex flex-col">
@@ -50,7 +54,8 @@ function ProductCard({ product, priority = false }: { product: Product, priority
                     className={`object-cover transition-all duration-500 group-hover:scale-110 z-10 ${isLoading ? 'opacity-0 scale-95' : 'opacity-100 scale-100'}`}
                     onLoad={() => setIsLoading(false)}
                     onError={() => {
-                        setImgSrc('/hero-vegetables.png');
+                        const fallback = catalogProducts.find(c => c.id === product.id);
+                        setImgSrc(fallback?.image || '/logo.png');
                         setIsLoading(false);
                     }}
                 />

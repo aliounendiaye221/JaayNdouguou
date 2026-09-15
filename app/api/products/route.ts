@@ -29,8 +29,8 @@ export async function GET() {
         const products = rawProducts.map(p => {
             const catalogItem = fallbackProducts.find(cat => cat.id === p.id);
             let image = p.image;
-            if (!image || image.trim() === '' || image === '/logo.png') {
-                image = catalogItem?.image || '/hero-vegetables.png';
+            if (!image || image.trim() === '' || image === '/placeholder.png') {
+                image = catalogItem?.image || '/logo.png';
             }
             if (!image.startsWith('/') && !image.startsWith('http')) {
                 image = `/${image}`;
